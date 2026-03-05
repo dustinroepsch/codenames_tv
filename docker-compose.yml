@@ -25,3 +25,12 @@ services:
       - 443:443
       - 80:80 #optional
     restart: unless-stopped
+
+  backend:
+    build: ./codenames_backend
+    container_name: codenames_backend
+    environment:
+      - CORS_ORIGIN=https://codejack.net
+    expose:
+      - "3001"
+    restart: unless-stopped
