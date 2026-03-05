@@ -5,6 +5,7 @@ Thumbs.db
 # Environment
 .env
 .env.*
+!.env.production
 
 # IDE
 .idea

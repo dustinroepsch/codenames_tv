@@ -30,9 +30,12 @@ async fn main() {
     };
 
     let cors = CorsLayer::new()
-        .allow_origin(Any)
         .allow_methods([Method::GET, Method::POST])
         .allow_headers(Any);
+    let cors = match std::env::var("CORS_ORIGIN") {
+        Ok(origin) => cors.allow_origin(origin.parse::<axum::http::HeaderValue>().unwrap()),
+        Err(_) => cors.allow_origin(Any),
+    };
 
     let app = Router::new()
         .route("/health", get(health))
