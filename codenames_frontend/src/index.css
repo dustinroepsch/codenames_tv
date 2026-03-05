@@ -375,21 +375,24 @@ h2 {
   border: 2px solid #444;
   border-radius: 8px;
   background: var(--surface);
+  color: var(--text);
+  font: inherit;
   cursor: default;
   transition: background 0.2s, border-color 0.2s, transform 0.15s;
 }
 
 .card-word {
-  font-size: clamp(0.7rem, 1.8vw, 1.1rem);
-  font-weight: 600;
+  font-size: clamp(0.8rem, 2vw, 1.2rem);
+  font-weight: 700;
   text-align: center;
   text-transform: uppercase;
   word-break: break-word;
 }
 
 .card-hidden {
-  background: var(--surface);
-  border-color: #444;
+  background: #1e2d4a;
+  border-color: #3a4a6a;
+  color: #f0f0f0;
 }
 
 .card-red {
@@ -405,9 +408,9 @@ h2 {
 }
 
 .card-neutral {
-  background: var(--neutral);
-  border-color: var(--neutral);
-  color: #333;
+  background: #95a5a6;
+  border-color: #7f8c8d;
+  color: #1a1a1a;
 }
 
 .card-assassin {
