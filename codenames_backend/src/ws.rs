@@ -90,6 +90,9 @@ pub async fn handle_socket(
         }
     });
 
+    // Send initial state so the client isn't stuck on "Loading"
+    broadcast_state(&room_manager, &channels, &room_code).await;
+
     // Process incoming messages
     while let Some(Ok(msg)) = ws_rx.next().await {
         let text = match msg {

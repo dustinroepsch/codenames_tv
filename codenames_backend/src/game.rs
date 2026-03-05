@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use rand::seq::SliceRandom;
 
 use crate::dictionary;
@@ -143,6 +141,7 @@ pub fn check_winner(board: &[Card]) -> Option<Team> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::HashMap;
 
     fn make_player(id: &str, name: &str) -> (String, Player) {
         (

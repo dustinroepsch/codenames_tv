@@ -58,6 +58,7 @@ const WORDS: &[&str] = &[
 ];
 
 /// Total number of words in the built-in dictionary.
+#[cfg(test)]
 pub fn word_count() -> usize {
     WORDS.len()
 }

@@ -165,3 +165,390 @@ h2 {
   font-size: 0.9rem;
   margin-top: 0.5rem;
 }
+
+/* ========================
+   Host Lobby
+   ======================== */
+.host-lobby {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  gap: 1.5rem;
+}
+
+.room-code-display {
+  text-align: center;
+}
+
+.room-code-label {
+  font-size: 1rem;
+  color: var(--text-dim);
+  letter-spacing: 0.2em;
+  margin-bottom: 0.25rem;
+}
+
+.room-code {
+  font-size: clamp(4rem, 15vw, 10rem);
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  color: var(--text);
+}
+
+.player-count {
+  color: var(--text-dim);
+}
+
+.waiting-msg {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* ========================
+   Player List
+   ======================== */
+.player-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  max-width: 600px;
+}
+
+.player-chip {
+  padding: 0.4rem 1rem;
+  background: var(--surface);
+  border: 1px solid #333;
+  border-radius: 20px;
+  font-size: 1rem;
+}
+
+.player-chip.disconnected {
+  opacity: 0.4;
+}
+
+.player-teams {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.team-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 120px;
+}
+
+.team-red h3 {
+  color: var(--red);
+}
+
+.team-blue h3 {
+  color: var(--blue);
+}
+
+.role-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.3rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+/* ========================
+   Word Submission (Host)
+   ======================== */
+.host-word-submission {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  gap: 1.5rem;
+}
+
+.ws-instruction {
+  color: var(--text-dim);
+  font-size: 1.1rem;
+}
+
+.ws-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timer-number {
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.3s;
+}
+
+.timer-urgent {
+  color: var(--red);
+  animation: pulse 0.5s ease-in-out infinite alternate;
+}
+
+.timer-label {
+  color: var(--text-dim);
+  font-size: 1rem;
+}
+
+.ws-word-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.word-count-number {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.word-count-label {
+  color: var(--text-dim);
+}
+
+.ws-dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ws-dots .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  animation: bounce 1.4s ease-in-out infinite;
+}
+
+.ws-dots .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.ws-dots .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes pulse {
+  from { opacity: 1; }
+  to { opacity: 0.5; }
+}
+
+/* ========================
+   Game Board
+   ======================== */
+.board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 5 / 4;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: 2px solid #444;
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: default;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.card-word {
+  font-size: clamp(0.7rem, 1.8vw, 1.1rem);
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  word-break: break-word;
+}
+
+.card-hidden {
+  background: var(--surface);
+  border-color: #444;
+}
+
+.card-red {
+  background: var(--red);
+  border-color: var(--red);
+  color: white;
+}
+
+.card-blue {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: white;
+}
+
+.card-neutral {
+  background: var(--neutral);
+  border-color: var(--neutral);
+  color: #333;
+}
+
+.card-assassin {
+  background: var(--assassin);
+  border-color: #111;
+  color: white;
+}
+
+.card-clickable {
+  cursor: pointer;
+}
+
+.card-clickable:hover {
+  transform: translateY(-2px);
+  border-color: var(--text);
+}
+
+/* ========================
+   Score Bar
+   ======================== */
+.score-bar {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 700;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.score.active-turn {
+  opacity: 1;
+}
+
+.score-red {
+  background: var(--red);
+}
+
+.score-blue {
+  background: var(--blue);
+}
+
+.score-label {
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+}
+
+.score-number {
+  font-size: 1.8rem;
+}
+
+/* ========================
+   Turn Info
+   ======================== */
+.turn-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.turn-team {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.turn-red {
+  color: var(--red);
+}
+
+.turn-blue {
+  color: var(--blue);
+}
+
+.clue-display {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.clue-display.waiting {
+  color: var(--text-dim);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.guesses-left {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+/* ========================
+   Host Game Layout
+   ======================== */
+.host-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem 2rem;
+  gap: 1rem;
+}
+
+/* ========================
+   Game Over
+   ======================== */
+.host-game-over {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  gap: 1.5rem;
+}
+
+.winner-banner {
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.winner-red {
+  color: var(--red);
+}
+
+.winner-blue {
+  color: var(--blue);
+}
+
+.win-reason {
+  color: var(--text-dim);
+  font-size: 1.1rem;
+}
