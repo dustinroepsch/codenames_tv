@@ -24,7 +24,7 @@ function renderHost(code = "ABCD") {
       <Routes>
         <Route path="/host/:code" element={<Host />} />
       </Routes>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }
 
@@ -92,7 +92,9 @@ describe("Host page", () => {
     mockContextValue.roomState = makeLobbyState();
     renderHost();
     expect(screen.getByText("Start Game")).toBeDisabled();
-    expect(screen.getByText("Waiting for at least 4 players...")).toBeInTheDocument();
+    expect(
+      screen.getByText("Waiting for at least 4 players..."),
+    ).toBeInTheDocument();
   });
 
   it("enables Start Game with 4+ players", () => {
@@ -135,8 +137,20 @@ describe("Host page", () => {
       })),
       current_turn: "red",
       players: [
-        { id: "p1", name: "Alice", team: "red", role: "spymaster", connected: true },
-        { id: "p2", name: "Bob", team: "blue", role: "operative", connected: true },
+        {
+          id: "p1",
+          name: "Alice",
+          team: "red",
+          role: "spymaster",
+          connected: true,
+        },
+        {
+          id: "p2",
+          name: "Bob",
+          team: "blue",
+          role: "operative",
+          connected: true,
+        },
       ],
     });
     renderHost();

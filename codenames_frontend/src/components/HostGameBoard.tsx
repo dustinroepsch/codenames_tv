@@ -21,9 +21,13 @@ export default function HostGameBoard({ roomState }: HostGameBoardProps) {
         </span>
         {current_clue ? (
           <span className="clue-display">
-            {current_clue.word.toUpperCase()} — {current_clue.number ?? "\u221E"}
+            {current_clue.word.toUpperCase()} —{" "}
+            {current_clue.number ?? "\u221E"}
             {guesses_remaining != null ? (
-              <span className="guesses-left"> ({guesses_remaining} guesses left)</span>
+              <span className="guesses-left">
+                {" "}
+                ({guesses_remaining} guesses left)
+              </span>
             ) : (
               <span className="guesses-left"> (unlimited guesses)</span>
             )}

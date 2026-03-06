@@ -19,7 +19,7 @@ describe("App routing", () => {
     render(
       <MemoryRouter initialEntries={["/"]}>
         <App />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     expect(screen.getByTestId("home-page")).toBeInTheDocument();
   });
@@ -28,7 +28,7 @@ describe("App routing", () => {
     render(
       <MemoryRouter initialEntries={["/host/ABCD"]}>
         <App />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     expect(screen.getByTestId("host-page")).toBeInTheDocument();
   });
@@ -37,7 +37,7 @@ describe("App routing", () => {
     render(
       <MemoryRouter initialEntries={["/play/ABCD"]}>
         <App />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     expect(screen.getByTestId("play-page")).toBeInTheDocument();
   });

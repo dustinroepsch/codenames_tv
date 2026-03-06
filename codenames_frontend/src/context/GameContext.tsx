@@ -34,7 +34,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     () => ({ roomState, playerId, connected, error, send, connectToRoom }),
-    [roomState, playerId, connected, error, send, connectToRoom]
+    [roomState, playerId, connected, error, send, connectToRoom],
   );
 
   return <GameContext value={value}>{children}</GameContext>;

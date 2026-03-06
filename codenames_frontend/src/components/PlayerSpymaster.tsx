@@ -9,7 +9,11 @@ interface PlayerSpymasterProps {
   playerId: string;
 }
 
-export default function PlayerSpymaster({ roomState, send, playerId }: PlayerSpymasterProps) {
+export default function PlayerSpymaster({
+  roomState,
+  send,
+  playerId,
+}: PlayerSpymasterProps) {
   const [clueWord, setClueWord] = useState("");
   const [clueNumber, setClueNumber] = useState<number | null>(1);
 
@@ -24,7 +28,10 @@ export default function PlayerSpymaster({ roomState, send, playerId }: PlayerSpy
     e.preventDefault();
     const trimmed = clueWord.trim();
     if (trimmed && waitingForClue) {
-      send({ type: "give_clue", payload: { word: trimmed, number: clueNumber } });
+      send({
+        type: "give_clue",
+        payload: { word: trimmed, number: clueNumber },
+      });
       setClueWord("");
       setClueNumber(1);
     }
@@ -55,15 +62,21 @@ export default function PlayerSpymaster({ roomState, send, playerId }: PlayerSpy
         </span>
         {current_clue ? (
           <span className="clue-display">
-            {current_clue.word.toUpperCase()} — {current_clue.number ?? "\u221E"}
+            {current_clue.word.toUpperCase()} —{" "}
+            {current_clue.number ?? "\u221E"}
             {guesses_remaining != null && (
-              <span className="guesses-left"> ({guesses_remaining} guesses left)</span>
+              <span className="guesses-left">
+                {" "}
+                ({guesses_remaining} guesses left)
+              </span>
             )}
           </span>
         ) : isMyTurn ? (
           <span className="clue-display waiting">Give your clue below</span>
         ) : (
-          <span className="clue-display waiting">Waiting for opponent's clue...</span>
+          <span className="clue-display waiting">
+            Waiting for opponent's clue...
+          </span>
         )}
       </div>
       <Board board={board} showColors />
@@ -100,7 +113,11 @@ export default function PlayerSpymaster({ roomState, send, playerId }: PlayerSpy
               </button>
             </div>
           </div>
-          <button type="submit" className="btn btn-primary" disabled={!clueWord.trim()}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={!clueWord.trim()}
+          >
             Give Clue
           </button>
         </form>

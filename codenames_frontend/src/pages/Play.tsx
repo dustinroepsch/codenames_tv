@@ -48,7 +48,11 @@ export default function Play() {
             autoFocus
             className="name-input"
           />
-          <button type="submit" className="btn btn-primary" disabled={!name.trim()}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={!name.trim()}
+          >
             Join
           </button>
         </form>
@@ -74,9 +78,21 @@ export default function Play() {
       return <PlayerWordSubmission roomState={roomState} send={send} />;
     case "playing":
       if (player?.role === "spymaster") {
-        return <PlayerSpymaster roomState={roomState} send={send} playerId={playerId} />;
+        return (
+          <PlayerSpymaster
+            roomState={roomState}
+            send={send}
+            playerId={playerId}
+          />
+        );
       }
-      return <PlayerOperative roomState={roomState} send={send} playerId={playerId} />;
+      return (
+        <PlayerOperative
+          roomState={roomState}
+          send={send}
+          playerId={playerId}
+        />
+      );
     case "game_over":
       return <PlayerGameOver roomState={roomState} playerId={playerId} />;
   }

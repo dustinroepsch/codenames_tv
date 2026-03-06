@@ -25,7 +25,7 @@ function renderPlay(code = "ABCD") {
       <Routes>
         <Route path="/play/:code" element={<Play />} />
       </Routes>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }
 
@@ -132,7 +132,9 @@ describe("Play page", () => {
     await user.click(screen.getByText("Join"));
 
     expect(screen.getByText("You're in!")).toBeInTheDocument();
-    expect(screen.getByText("Waiting for host to start...")).toBeInTheDocument();
+    expect(
+      screen.getByText("Waiting for host to start..."),
+    ).toBeInTheDocument();
   });
 
   it("shows word submission view", async () => {
@@ -162,8 +164,20 @@ describe("Play page", () => {
       board: makeBoard(),
       current_turn: "red",
       players: [
-        { id: "p1", name: "Alice", team: "red", role: "spymaster", connected: true },
-        { id: "p2", name: "Bob", team: "blue", role: "operative", connected: true },
+        {
+          id: "p1",
+          name: "Alice",
+          team: "red",
+          role: "spymaster",
+          connected: true,
+        },
+        {
+          id: "p2",
+          name: "Bob",
+          team: "blue",
+          role: "operative",
+          connected: true,
+        },
       ],
     });
     renderPlay();
@@ -186,8 +200,20 @@ describe("Play page", () => {
       current_clue: { word: "animal", number: 3 },
       guesses_remaining: 4,
       players: [
-        { id: "p1", name: "Alice", team: "red", role: "spymaster", connected: true },
-        { id: "p2", name: "Bob", team: "red", role: "operative", connected: true },
+        {
+          id: "p1",
+          name: "Alice",
+          team: "red",
+          role: "spymaster",
+          connected: true,
+        },
+        {
+          id: "p2",
+          name: "Bob",
+          team: "red",
+          role: "operative",
+          connected: true,
+        },
       ],
     });
     renderPlay();
@@ -209,7 +235,13 @@ describe("Play page", () => {
       winner: "red",
       board: makeBoard().map((c) => ({ ...c, revealed: true })),
       players: [
-        { id: "p1", name: "Alice", team: "red", role: "operative", connected: true },
+        {
+          id: "p1",
+          name: "Alice",
+          team: "red",
+          role: "operative",
+          connected: true,
+        },
       ],
     });
     renderPlay();

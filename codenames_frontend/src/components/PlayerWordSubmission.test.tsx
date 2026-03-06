@@ -66,7 +66,12 @@ describe("PlayerWordSubmission", () => {
   });
 
   it("shows total word count from room state", () => {
-    render(<PlayerWordSubmission roomState={makeRoomState({ word_count: 12 })} send={vi.fn()} />);
+    render(
+      <PlayerWordSubmission
+        roomState={makeRoomState({ word_count: 12 })}
+        send={vi.fn()}
+      />,
+    );
     expect(screen.getByText("12 total words submitted")).toBeInTheDocument();
   });
 

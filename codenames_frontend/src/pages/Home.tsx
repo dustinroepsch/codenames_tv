@@ -50,7 +50,11 @@ export default function Home() {
       <p className="subtitle">A Jackbox-style party game</p>
 
       <div className="home-actions">
-        <button className="btn btn-primary" onClick={handleHost} disabled={loading}>
+        <button
+          className="btn btn-primary"
+          onClick={handleHost}
+          disabled={loading}
+        >
           Host a Game
         </button>
 
@@ -65,7 +69,11 @@ export default function Home() {
             maxLength={4}
             className="code-input"
           />
-          <button type="submit" className="btn btn-secondary" disabled={loading || joinCode.length !== 4}>
+          <button
+            type="submit"
+            className="btn btn-secondary"
+            disabled={loading || joinCode.length !== 4}
+          >
             Join Game
           </button>
         </form>

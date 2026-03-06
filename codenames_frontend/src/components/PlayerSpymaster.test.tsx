@@ -7,7 +7,13 @@ import type { RoomState } from "../types/game";
 function makeBoard() {
   return Array.from({ length: 25 }, (_, i) => ({
     word: `Word${i}`,
-    color: (i < 9 ? "red" : i < 17 ? "blue" : i < 24 ? "neutral" : "assassin") as "red" | "blue" | "neutral" | "assassin",
+    color: (i < 9
+      ? "red"
+      : i < 17
+        ? "blue"
+        : i < 24
+          ? "neutral"
+          : "assassin") as "red" | "blue" | "neutral" | "assassin",
     revealed: false,
   }));
 }
@@ -17,8 +23,20 @@ function makeRoomState(overrides: Partial<RoomState> = {}): RoomState {
     code: "ABCD",
     phase: "playing",
     players: [
-      { id: "p1", name: "Alice", team: "red", role: "spymaster", connected: true },
-      { id: "p2", name: "Bob", team: "blue", role: "operative", connected: true },
+      {
+        id: "p1",
+        name: "Alice",
+        team: "red",
+        role: "spymaster",
+        connected: true,
+      },
+      {
+        id: "p2",
+        name: "Bob",
+        team: "blue",
+        role: "operative",
+        connected: true,
+      },
     ],
     board: makeBoard(),
     current_turn: "red",
@@ -34,14 +52,24 @@ function makeRoomState(overrides: Partial<RoomState> = {}): RoomState {
 
 describe("PlayerSpymaster", () => {
   it("shows spymaster role header", () => {
-    render(<PlayerSpymaster roomState={makeRoomState()} send={vi.fn()} playerId="p1" />);
+    render(
+      <PlayerSpymaster
+        roomState={makeRoomState()}
+        send={vi.fn()}
+        playerId="p1"
+      />,
+    );
     expect(screen.getByText("SPYMASTER")).toBeInTheDocument();
     expect(screen.getByText("RED TEAM")).toBeInTheDocument();
   });
 
   it("shows board with cards and true colors for unrevealed cards", () => {
     const { container } = render(
-      <PlayerSpymaster roomState={makeRoomState()} send={vi.fn()} playerId="p1" />
+      <PlayerSpymaster
+        roomState={makeRoomState()}
+        send={vi.fn()}
+        playerId="p1"
+      />,
     );
     expect(screen.getByText("Word0")).toBeInTheDocument();
     expect(screen.getByText("Word24")).toBeInTheDocument();
@@ -55,7 +83,13 @@ describe("PlayerSpymaster", () => {
   });
 
   it("shows clue form when it is spymaster's turn and no clue given", () => {
-    render(<PlayerSpymaster roomState={makeRoomState()} send={vi.fn()} playerId="p1" />);
+    render(
+      <PlayerSpymaster
+        roomState={makeRoomState()}
+        send={vi.fn()}
+        playerId="p1"
+      />,
+    );
     expect(screen.getByPlaceholderText("Clue word")).toBeInTheDocument();
     expect(screen.getByText("Give Clue")).toBeDisabled();
     expect(screen.getByText("Give your clue below")).toBeInTheDocument();
@@ -65,13 +99,17 @@ describe("PlayerSpymaster", () => {
     const state = makeRoomState({ current_turn: "blue" });
     render(<PlayerSpymaster roomState={state} send={vi.fn()} playerId="p1" />);
     expect(screen.queryByPlaceholderText("Clue word")).not.toBeInTheDocument();
-    expect(screen.getByText("Waiting for opponent's clue...")).toBeInTheDocument();
+    expect(
+      screen.getByText("Waiting for opponent's clue..."),
+    ).toBeInTheDocument();
   });
 
   it("sends give_clue message on submit with selected number", async () => {
     const user = userEvent.setup();
     const send = vi.fn();
-    render(<PlayerSpymaster roomState={makeRoomState()} send={send} playerId="p1" />);
+    render(
+      <PlayerSpymaster roomState={makeRoomState()} send={send} playerId="p1" />,
+    );
 
     await user.type(screen.getByPlaceholderText("Clue word"), "animal");
     const increaseBtn = screen.getByLabelText("Increase number");
@@ -88,7 +126,11 @@ describe("PlayerSpymaster", () => {
   it("number picker cycles 0 through 9 to unlimited", async () => {
     const user = userEvent.setup();
     const { container } = render(
-      <PlayerSpymaster roomState={makeRoomState()} send={vi.fn()} playerId="p1" />
+      <PlayerSpymaster
+        roomState={makeRoomState()}
+        send={vi.fn()}
+        playerId="p1"
+      />,
     );
 
     const decreaseBtn = screen.getByLabelText("Decrease number");
@@ -115,7 +157,9 @@ describe("PlayerSpymaster", () => {
   it("sends null for unlimited clue number", async () => {
     const user = userEvent.setup();
     const send = vi.fn();
-    render(<PlayerSpymaster roomState={makeRoomState()} send={send} playerId="p1" />);
+    render(
+      <PlayerSpymaster roomState={makeRoomState()} send={send} playerId="p1" />,
+    );
 
     await user.type(screen.getByPlaceholderText("Clue word"), "feathers");
     // Go from 1 → 9 → ∞
@@ -134,7 +178,9 @@ describe("PlayerSpymaster", () => {
   it("sends 0 for zero clue number", async () => {
     const user = userEvent.setup();
     const send = vi.fn();
-    render(<PlayerSpymaster roomState={makeRoomState()} send={send} playerId="p1" />);
+    render(
+      <PlayerSpymaster roomState={makeRoomState()} send={send} playerId="p1" />,
+    );
 
     await user.type(screen.getByPlaceholderText("Clue word"), "feathers");
     // Go from 1 → 0
@@ -171,7 +217,7 @@ describe("PlayerSpymaster", () => {
   it("returns null when board is null", () => {
     const state = makeRoomState({ board: null });
     const { container } = render(
-      <PlayerSpymaster roomState={state} send={vi.fn()} playerId="p1" />
+      <PlayerSpymaster roomState={state} send={vi.fn()} playerId="p1" />,
     );
     expect(container.innerHTML).toBe("");
   });

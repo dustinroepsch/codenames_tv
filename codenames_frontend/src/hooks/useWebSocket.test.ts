@@ -76,7 +76,7 @@ describe("useWebSocket", () => {
   it("sets connected to true on open", () => {
     const onMessage = vi.fn();
     const { result } = renderHook(() =>
-      useWebSocket({ url: "ws://test", onMessage })
+      useWebSocket({ url: "ws://test", onMessage }),
     );
     expect(result.current.connected).toBe(false);
 
@@ -117,28 +117,28 @@ describe("useWebSocket", () => {
   it("sends messages as JSON when connected", () => {
     const onMessage = vi.fn();
     const { result } = renderHook(() =>
-      useWebSocket({ url: "ws://test", onMessage })
+      useWebSocket({ url: "ws://test", onMessage }),
     );
 
     act(() => mockInstances[0].simulateOpen());
     act(() =>
-      result.current.send({ type: "join", payload: { name: "Alice" } })
+      result.current.send({ type: "join", payload: { name: "Alice" } }),
     );
 
     expect(mockInstances[0].send).toHaveBeenCalledWith(
-      JSON.stringify({ type: "join", payload: { name: "Alice" } })
+      JSON.stringify({ type: "join", payload: { name: "Alice" } }),
     );
   });
 
   it("does not send when not connected", () => {
     const onMessage = vi.fn();
     const { result } = renderHook(() =>
-      useWebSocket({ url: "ws://test", onMessage })
+      useWebSocket({ url: "ws://test", onMessage }),
     );
 
     // WebSocket is still CONNECTING, not OPEN
     act(() =>
-      result.current.send({ type: "join", payload: { name: "Alice" } })
+      result.current.send({ type: "join", payload: { name: "Alice" } }),
     );
 
     expect(mockInstances[0].send).not.toHaveBeenCalled();
@@ -147,7 +147,7 @@ describe("useWebSocket", () => {
   it("sets connected to false on close", () => {
     const onMessage = vi.fn();
     const { result } = renderHook(() =>
-      useWebSocket({ url: "ws://test", onMessage })
+      useWebSocket({ url: "ws://test", onMessage }),
     );
 
     act(() => mockInstances[0].simulateOpen());
@@ -173,7 +173,7 @@ describe("useWebSocket", () => {
   it("closes socket on unmount", () => {
     const onMessage = vi.fn();
     const { unmount } = renderHook(() =>
-      useWebSocket({ url: "ws://test", onMessage })
+      useWebSocket({ url: "ws://test", onMessage }),
     );
 
     act(() => mockInstances[0].simulateOpen());

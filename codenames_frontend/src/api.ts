@@ -7,8 +7,10 @@ export async function createRoom(): Promise<{ code: string; host_id: string }> {
 }
 
 export async function getRoom(
-  code: string
-): Promise<{ code: string; phase: string; player_count: number } | { error: string }> {
+  code: string,
+): Promise<
+  { code: string; phase: string; player_count: number } | { error: string }
+> {
   const res = await fetch(`${API_BASE}/rooms/${code.toUpperCase()}`);
   return res.json();
 }

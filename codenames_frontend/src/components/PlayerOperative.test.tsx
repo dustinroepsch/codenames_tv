@@ -17,8 +17,20 @@ function makeRoomState(overrides: Partial<RoomState> = {}): RoomState {
     code: "ABCD",
     phase: "playing",
     players: [
-      { id: "p1", name: "Alice", team: "red", role: "spymaster", connected: true },
-      { id: "p2", name: "Bob", team: "red", role: "operative", connected: true },
+      {
+        id: "p1",
+        name: "Alice",
+        team: "red",
+        role: "spymaster",
+        connected: true,
+      },
+      {
+        id: "p2",
+        name: "Bob",
+        team: "red",
+        role: "operative",
+        connected: true,
+      },
     ],
     board: makeBoard(),
     current_turn: "red",
@@ -34,32 +46,58 @@ function makeRoomState(overrides: Partial<RoomState> = {}): RoomState {
 
 describe("PlayerOperative", () => {
   it("shows operative role header", () => {
-    render(<PlayerOperative roomState={makeRoomState()} send={vi.fn()} playerId="p2" />);
+    render(
+      <PlayerOperative
+        roomState={makeRoomState()}
+        send={vi.fn()}
+        playerId="p2"
+      />,
+    );
     expect(screen.getByText("OPERATIVE")).toBeInTheDocument();
     expect(screen.getByText("RED TEAM")).toBeInTheDocument();
   });
 
   it("shows current clue and guesses remaining", () => {
-    render(<PlayerOperative roomState={makeRoomState()} send={vi.fn()} playerId="p2" />);
+    render(
+      <PlayerOperative
+        roomState={makeRoomState()}
+        send={vi.fn()}
+        playerId="p2"
+      />,
+    );
     expect(screen.getByText("ANIMAL — 3")).toBeInTheDocument();
     expect(screen.getByText("(4 guesses left)")).toBeInTheDocument();
   });
 
   it("shows board cards", () => {
-    render(<PlayerOperative roomState={makeRoomState()} send={vi.fn()} playerId="p2" />);
+    render(
+      <PlayerOperative
+        roomState={makeRoomState()}
+        send={vi.fn()}
+        playerId="p2"
+      />,
+    );
     expect(screen.getByText("Word0")).toBeInTheDocument();
     expect(screen.getByText("Word24")).toBeInTheDocument();
   });
 
   it("shows end turn button when it is player's turn and clue given", () => {
-    render(<PlayerOperative roomState={makeRoomState()} send={vi.fn()} playerId="p2" />);
+    render(
+      <PlayerOperative
+        roomState={makeRoomState()}
+        send={vi.fn()}
+        playerId="p2"
+      />,
+    );
     expect(screen.getByText("End Turn")).toBeInTheDocument();
   });
 
   it("sends end_turn message on button click", async () => {
     const user = userEvent.setup();
     const send = vi.fn();
-    render(<PlayerOperative roomState={makeRoomState()} send={send} playerId="p2" />);
+    render(
+      <PlayerOperative roomState={makeRoomState()} send={send} playerId="p2" />,
+    );
 
     await user.click(screen.getByText("End Turn"));
     expect(send).toHaveBeenCalledWith({ type: "end_turn" });
@@ -68,7 +106,9 @@ describe("PlayerOperative", () => {
   it("sends guess message on card click", async () => {
     const user = userEvent.setup();
     const send = vi.fn();
-    render(<PlayerOperative roomState={makeRoomState()} send={send} playerId="p2" />);
+    render(
+      <PlayerOperative roomState={makeRoomState()} send={send} playerId="p2" />,
+    );
 
     await user.click(screen.getByText("Word5"));
     expect(send).toHaveBeenCalledWith({
@@ -78,16 +118,23 @@ describe("PlayerOperative", () => {
   });
 
   it("shows waiting message when no clue given yet", () => {
-    const state = makeRoomState({ current_clue: null, guesses_remaining: null });
+    const state = makeRoomState({
+      current_clue: null,
+      guesses_remaining: null,
+    });
     render(<PlayerOperative roomState={state} send={vi.fn()} playerId="p2" />);
-    expect(screen.getByText("Waiting for your spymaster's clue...")).toBeInTheDocument();
+    expect(
+      screen.getByText("Waiting for your spymaster's clue..."),
+    ).toBeInTheDocument();
     expect(screen.queryByText("End Turn")).not.toBeInTheDocument();
   });
 
   it("shows waiting message when it is not player's turn", () => {
     const state = makeRoomState({ current_turn: "blue" });
     render(<PlayerOperative roomState={state} send={vi.fn()} playerId="p2" />);
-    expect(screen.getByText("Waiting for the other team...")).toBeInTheDocument();
+    expect(
+      screen.getByText("Waiting for the other team..."),
+    ).toBeInTheDocument();
     expect(screen.queryByText("End Turn")).not.toBeInTheDocument();
   });
 
@@ -124,7 +171,7 @@ describe("PlayerOperative", () => {
   it("returns null when board is null", () => {
     const state = makeRoomState({ board: null });
     const { container } = render(
-      <PlayerOperative roomState={state} send={vi.fn()} playerId="p2" />
+      <PlayerOperative roomState={state} send={vi.fn()} playerId="p2" />,
     );
     expect(container.innerHTML).toBe("");
   });

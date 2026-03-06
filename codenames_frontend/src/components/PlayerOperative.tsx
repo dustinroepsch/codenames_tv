@@ -8,7 +8,11 @@ interface PlayerOperativeProps {
   playerId: string;
 }
 
-export default function PlayerOperative({ roomState, send, playerId }: PlayerOperativeProps) {
+export default function PlayerOperative({
+  roomState,
+  send,
+  playerId,
+}: PlayerOperativeProps) {
   const { board, current_turn, current_clue, guesses_remaining } = roomState;
   const player = roomState.players.find((p) => p.id === playerId);
   const isMyTurn = player?.team === current_turn;
@@ -41,9 +45,13 @@ export default function PlayerOperative({ roomState, send, playerId }: PlayerOpe
         </span>
         {current_clue ? (
           <span className="clue-display">
-            {current_clue.word.toUpperCase()} — {current_clue.number ?? "\u221E"}
+            {current_clue.word.toUpperCase()} —{" "}
+            {current_clue.number ?? "\u221E"}
             {guesses_remaining != null ? (
-              <span className="guesses-left"> ({guesses_remaining} guesses left)</span>
+              <span className="guesses-left">
+                {" "}
+                ({guesses_remaining} guesses left)
+              </span>
             ) : (
               <span className="guesses-left"> (unlimited guesses)</span>
             )}
@@ -52,9 +60,16 @@ export default function PlayerOperative({ roomState, send, playerId }: PlayerOpe
           <span className="clue-display waiting">Waiting for clue...</span>
         )}
       </div>
-      <Board board={board} onCardClick={handleCardClick} interactive={canGuess} />
+      <Board
+        board={board}
+        onCardClick={handleCardClick}
+        interactive={canGuess}
+      />
       {canGuess && (
-        <button className="btn btn-secondary end-turn-btn" onClick={handleEndTurn}>
+        <button
+          className="btn btn-secondary end-turn-btn"
+          onClick={handleEndTurn}
+        >
           End Turn
         </button>
       )}

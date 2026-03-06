@@ -49,6 +49,8 @@ describe("PlayerLobby", () => {
 
   it("shows waiting message", () => {
     render(<PlayerLobby roomState={makeRoomState()} playerName="Alice" />);
-    expect(screen.getByText("Waiting for host to start...")).toBeInTheDocument();
+    expect(
+      screen.getByText("Waiting for host to start..."),
+    ).toBeInTheDocument();
   });
 });

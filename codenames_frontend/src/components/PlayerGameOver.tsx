@@ -6,7 +6,10 @@ interface PlayerGameOverProps {
   playerId: string;
 }
 
-export default function PlayerGameOver({ roomState, playerId }: PlayerGameOverProps) {
+export default function PlayerGameOver({
+  roomState,
+  playerId,
+}: PlayerGameOverProps) {
   const { winner, losing_team, board } = roomState;
   const player = roomState.players.find((p) => p.id === playerId);
   const won = player?.team === winner;

@@ -19,7 +19,8 @@ export default function HostLobby({ roomState, send }: HostLobbyProps) {
       </div>
       <PlayerList players={roomState.players} />
       <p className="player-count">
-        {roomState.players.length} player{roomState.players.length !== 1 ? "s" : ""} connected
+        {roomState.players.length} player
+        {roomState.players.length !== 1 ? "s" : ""} connected
       </p>
       {!canStart && (
         <p className="waiting-msg">Waiting for at least 4 players...</p>

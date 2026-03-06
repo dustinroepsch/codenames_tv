@@ -5,12 +5,18 @@ interface PlayerListProps {
   showTeams?: boolean;
 }
 
-export default function PlayerList({ players, showTeams = false }: PlayerListProps) {
+export default function PlayerList({
+  players,
+  showTeams = false,
+}: PlayerListProps) {
   if (!showTeams) {
     return (
       <div className="player-list">
         {players.map((p) => (
-          <div key={p.id} className={`player-chip ${p.connected ? "" : "disconnected"}`}>
+          <div
+            key={p.id}
+            className={`player-chip ${p.connected ? "" : "disconnected"}`}
+          >
             {p.name}
           </div>
         ))}
@@ -26,7 +32,10 @@ export default function PlayerList({ players, showTeams = false }: PlayerListPro
       <div className="team-column team-red">
         <h3>Red Team</h3>
         {red.map((p) => (
-          <div key={p.id} className={`player-chip ${p.connected ? "" : "disconnected"}`}>
+          <div
+            key={p.id}
+            className={`player-chip ${p.connected ? "" : "disconnected"}`}
+          >
             {p.name}
             {p.role === "spymaster" && <span className="role-badge">SM</span>}
           </div>
@@ -35,7 +44,10 @@ export default function PlayerList({ players, showTeams = false }: PlayerListPro
       <div className="team-column team-blue">
         <h3>Blue Team</h3>
         {blue.map((p) => (
-          <div key={p.id} className={`player-chip ${p.connected ? "" : "disconnected"}`}>
+          <div
+            key={p.id}
+            className={`player-chip ${p.connected ? "" : "disconnected"}`}
+          >
             {p.name}
             {p.role === "spymaster" && <span className="role-badge">SM</span>}
           </div>

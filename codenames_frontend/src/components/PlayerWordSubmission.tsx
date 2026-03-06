@@ -6,7 +6,10 @@ interface PlayerWordSubmissionProps {
   send: (msg: ClientMessage) => void;
 }
 
-export default function PlayerWordSubmission({ roomState, send }: PlayerWordSubmissionProps) {
+export default function PlayerWordSubmission({
+  roomState,
+  send,
+}: PlayerWordSubmissionProps) {
   const [word, setWord] = useState("");
   const [submitted, setSubmitted] = useState<string[]>([]);
   const [timeLeft, setTimeLeft] = useState(60);
@@ -32,7 +35,9 @@ export default function PlayerWordSubmission({ roomState, send }: PlayerWordSubm
     <div className="player-word-submission">
       <h2>Submit Words</h2>
       <div className="ws-timer">
-        <span className={`timer-number timer-small ${timeLeft <= 10 ? "timer-urgent" : ""}`}>
+        <span
+          className={`timer-number timer-small ${timeLeft <= 10 ? "timer-urgent" : ""}`}
+        >
           {timeLeft}
         </span>
         <span className="timer-label">seconds remaining</span>
@@ -47,7 +52,11 @@ export default function PlayerWordSubmission({ roomState, send }: PlayerWordSubm
           autoFocus
           className="word-input"
         />
-        <button type="submit" className="btn btn-primary" disabled={!word.trim()}>
+        <button
+          type="submit"
+          className="btn btn-primary"
+          disabled={!word.trim()}
+        >
           Submit Word
         </button>
       </form>
@@ -56,12 +65,16 @@ export default function PlayerWordSubmission({ roomState, send }: PlayerWordSubm
           <p className="submitted-label">Your words:</p>
           <div className="word-chips">
             {submitted.map((w, i) => (
-              <span key={i} className="word-chip">{w}</span>
+              <span key={i} className="word-chip">
+                {w}
+              </span>
             ))}
           </div>
         </div>
       )}
-      <p className="total-word-count">{roomState.word_count} total words submitted</p>
+      <p className="total-word-count">
+        {roomState.word_count} total words submitted
+      </p>
     </div>
   );
 }

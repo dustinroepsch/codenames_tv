@@ -15,11 +15,17 @@ function wordSizeClass(word: string): string {
   return "card-word-xs";
 }
 
-export default function Board({ board, onCardClick, interactive = false, showColors = false }: BoardProps) {
+export default function Board({
+  board,
+  onCardClick,
+  interactive = false,
+  showColors = false,
+}: BoardProps) {
   return (
     <div className="board">
       {board.map((card, i) => {
-        const colorClass = (card.revealed || showColors) ? `card-${card.color}` : "card-hidden";
+        const colorClass =
+          card.revealed || showColors ? `card-${card.color}` : "card-hidden";
         const clickable = interactive && !card.revealed;
         return (
           <button
@@ -28,7 +34,9 @@ export default function Board({ board, onCardClick, interactive = false, showCol
             onClick={() => clickable && onCardClick?.(i)}
             disabled={!clickable}
           >
-            <span className={`card-word ${wordSizeClass(card.word)}`}>{card.word}</span>
+            <span className={`card-word ${wordSizeClass(card.word)}`}>
+              {card.word}
+            </span>
           </button>
         );
       })}

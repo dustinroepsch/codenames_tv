@@ -6,7 +6,10 @@ interface HostWordSubmissionProps {
   send: (msg: ClientMessage) => void;
 }
 
-export default function HostWordSubmission({ roomState, send }: HostWordSubmissionProps) {
+export default function HostWordSubmission({
+  roomState,
+  send,
+}: HostWordSubmissionProps) {
   const [timeLeft, setTimeLeft] = useState(60);
 
   useEffect(() => {
@@ -21,7 +24,9 @@ export default function HostWordSubmission({ roomState, send }: HostWordSubmissi
       <h2>Submit Your Words!</h2>
       <p className="ws-instruction">Players: enter words on your phones</p>
       <div className="ws-timer">
-        <span className={`timer-number ${timeLeft <= 10 ? "timer-urgent" : ""}`}>
+        <span
+          className={`timer-number ${timeLeft <= 10 ? "timer-urgent" : ""}`}
+        >
           {timeLeft}
         </span>
         <span className="timer-label">seconds remaining</span>
