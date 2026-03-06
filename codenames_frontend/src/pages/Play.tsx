@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGame } from "../hooks/useGame";
+import PlayerLobby from "../components/PlayerLobby";
+import PlayerWordSubmission from "../components/PlayerWordSubmission";
+import PlayerSpymaster from "../components/PlayerSpymaster";
+import PlayerOperative from "../components/PlayerOperative";
+import PlayerGameOver from "../components/PlayerGameOver";
 
 export default function Play() {
   const { code } = useParams<{ code: string }>();
@@ -51,12 +56,28 @@ export default function Play() {
     );
   }
 
-  return (
-    <div className="play">
-      <p>Room: {roomState?.code ?? code}</p>
-      <p>Phase: {roomState?.phase ?? "connecting"}</p>
-      <p>You: {roomState?.players.find((p) => p.id === playerId)?.name ?? name}</p>
-      {/* Phase-specific views will be added in Phase 4 */}
-    </div>
-  );
+  if (!roomState) {
+    return (
+      <div className="play">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  const player = roomState.players.find((p) => p.id === playerId);
+  const playerName = player?.name ?? name;
+
+  switch (roomState.phase) {
+    case "lobby":
+      return <PlayerLobby roomState={roomState} playerName={playerName} />;
+    case "word_submission":
+      return <PlayerWordSubmission roomState={roomState} send={send} />;
+    case "playing":
+      if (player?.role === "spymaster") {
+        return <PlayerSpymaster roomState={roomState} send={send} playerId={playerId} />;
+      }
+      return <PlayerOperative roomState={roomState} send={send} playerId={playerId} />;
+    case "game_over":
+      return <PlayerGameOver roomState={roomState} playerId={playerId} />;
+  }
 }
