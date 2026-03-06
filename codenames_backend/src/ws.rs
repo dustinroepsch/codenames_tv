@@ -35,7 +35,7 @@ async fn broadcast_state(room_manager: &RoomManager, channels: &RoomChannels, ro
     let tx = get_channel(channels, room_code).await;
 
     // Send personalized state to each player
-    for (player_id, _) in &room.players {
+    for player_id in room.players.keys() {
         let state = room.state_for_player(player_id);
         let msg = ServerMessage::State(state);
         if let Ok(json) = serde_json::to_string(&msg) {
@@ -81,11 +81,10 @@ pub async fn handle_socket(
                 } else {
                     target == player_id_clone
                 };
-                if should_send {
-                    if ws_tx.send(Message::Text(json.into())).await.is_err() {
+                if should_send
+                    && ws_tx.send(Message::Text(json.into())).await.is_err() {
                         break;
                     }
-                }
             }
         }
     });
@@ -427,19 +426,16 @@ async fn handle_message(
         ClientMessage::EndTurn => {
             room_manager
                 .with_room(room_code, |room| {
-                    if let Some(game) = &mut room.game {
-                        if room.phase == GamePhase::Playing && game.current_clue.is_some() {
-                            if let Some(player) = room.players.get(player_id) {
-                                if player.team == Some(game.current_turn)
+                    if let Some(game) = &mut room.game
+                        && room.phase == GamePhase::Playing && game.current_clue.is_some()
+                            && let Some(player) = room.players.get(player_id)
+                                && player.team == Some(game.current_turn)
                                     && player.role == Some(Role::Operative)
                                 {
                                     game.current_turn = game.current_turn.other();
                                     game.current_clue = None;
                                     game.guesses_remaining = None;
                                 }
-                            }
-                        }
-                    }
                 })
                 .await;
 

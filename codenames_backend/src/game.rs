@@ -8,7 +8,7 @@ pub fn build_board(submitted_words: &[String]) -> Vec<Card> {
     let mut words: Vec<String> = submitted_words.to_vec();
 
     // Deduplicate (case-insensitive)
-    words.sort_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+    words.sort_by_key(|a| a.to_lowercase());
     words.dedup_by(|a, b| a.eq_ignore_ascii_case(b));
 
     // Pad to 25 if needed
@@ -103,16 +103,14 @@ pub fn assign_teams(players: &mut std::collections::HashMap<String, Player>) -> 
     let red_players: Vec<&String> = ids.iter().take(half).collect();
     let blue_players: Vec<&String> = ids.iter().skip(half).collect();
 
-    if let Some(spymaster_id) = red_players.choose(&mut rng) {
-        if let Some(p) = players.get_mut(*spymaster_id) {
+    if let Some(spymaster_id) = red_players.choose(&mut rng)
+        && let Some(p) = players.get_mut(*spymaster_id) {
             p.role = Some(Role::Spymaster);
         }
-    }
-    if let Some(spymaster_id) = blue_players.choose(&mut rng) {
-        if let Some(p) = players.get_mut(*spymaster_id) {
+    if let Some(spymaster_id) = blue_players.choose(&mut rng)
+        && let Some(p) = players.get_mut(*spymaster_id) {
             p.role = Some(Role::Spymaster);
         }
-    }
 
     // Return a placeholder; actual first team is determined by board
     Team::Red
