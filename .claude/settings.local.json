@@ -11,7 +11,8 @@
       "Bash(npm run:*)",
       "Bash(npm test:*)",
       "Bash(cargo check:*)",
-      "Bash(npx vitest:*)"
+      "Bash(npx vitest:*)",
+      "Bash(npx prettier:*)"
     ]
   }
 }
