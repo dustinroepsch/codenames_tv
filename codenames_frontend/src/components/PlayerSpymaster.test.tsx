@@ -70,21 +70,46 @@ describe("PlayerSpymaster", () => {
     expect(screen.getByText("Waiting for opponent's clue...")).toBeInTheDocument();
   });
 
-  it("sends give_clue message on submit", async () => {
+  it("sends give_clue message on submit with selected number", async () => {
     const user = userEvent.setup();
     const send = vi.fn();
     render(<PlayerSpymaster roomState={makeRoomState()} send={send} playerId="p1" />);
 
     await user.type(screen.getByPlaceholderText("Clue word"), "animal");
-    const numberInput = screen.getByRole("spinbutton");
-    await user.clear(numberInput);
-    await user.type(numberInput, "3");
+    // Default is 1, click + twice to get to 3
+    const increaseBtn = screen.getByLabelText("Increase number");
+    await user.click(increaseBtn);
+    await user.click(increaseBtn);
+    expect(screen.getByText("3")).toBeInTheDocument();
     await user.click(screen.getByText("Give Clue"));
 
     expect(send).toHaveBeenCalledWith({
       type: "give_clue",
       payload: { word: "animal", number: 3 },
     });
+  });
+
+  it("clamps number picker between 0 and 9", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <PlayerSpymaster roomState={makeRoomState()} send={vi.fn()} playerId="p1" />
+    );
+
+    const decreaseBtn = screen.getByLabelText("Decrease number");
+    const increaseBtn = screen.getByLabelText("Increase number");
+    const pickerValue = container.querySelector(".picker-value")!;
+
+    // Default is 1, decrease to 0
+    await user.click(decreaseBtn);
+    expect(pickerValue.textContent).toBe("0");
+    expect(decreaseBtn).toBeDisabled();
+
+    // Click + 9 times to reach 9
+    for (let i = 0; i < 9; i++) {
+      await user.click(increaseBtn);
+    }
+    expect(pickerValue.textContent).toBe("9");
+    expect(increaseBtn).toBeDisabled();
   });
 
   it("does not show clue form when clue already given", () => {

@@ -731,20 +731,45 @@ h2 {
   border-color: var(--blue);
 }
 
-.clue-number-input {
-  width: 60px;
-  padding: 0.7rem;
+.number-picker {
+  display: flex;
+  align-items: center;
+  gap: 0;
   border: 2px solid #333;
   border-radius: 8px;
+  overflow: hidden;
   background: var(--surface);
-  color: var(--text);
-  font-size: 1rem;
-  text-align: center;
 }
 
-.clue-number-input:focus {
-  outline: none;
-  border-color: var(--blue);
+.picker-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.picker-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.picker-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.picker-value {
+  width: 36px;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .clue-form .btn {

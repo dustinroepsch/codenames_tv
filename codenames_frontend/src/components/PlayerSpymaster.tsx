@@ -65,14 +65,27 @@ export default function PlayerSpymaster({ roomState, send, playerId }: PlayerSpy
             className="clue-input"
             autoFocus
           />
-          <input
-            type="number"
-            min={0}
-            max={9}
-            value={clueNumber}
-            onChange={(e) => setClueNumber(Number(e.target.value))}
-            className="clue-number-input"
-          />
+          <div className="number-picker">
+            <button
+              type="button"
+              className="picker-btn"
+              onClick={() => setClueNumber((n) => Math.max(0, n - 1))}
+              disabled={clueNumber <= 0}
+              aria-label="Decrease number"
+            >
+              -
+            </button>
+            <span className="picker-value">{clueNumber}</span>
+            <button
+              type="button"
+              className="picker-btn"
+              onClick={() => setClueNumber((n) => Math.min(9, n + 1))}
+              disabled={clueNumber >= 9}
+              aria-label="Increase number"
+            >
+              +
+            </button>
+          </div>
           <button type="submit" className="btn btn-primary" disabled={!clueWord.trim()}>
             Give Clue
           </button>
