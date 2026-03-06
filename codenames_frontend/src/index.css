@@ -710,9 +710,17 @@ h2 {
 
 .clue-form {
   display: flex;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.75rem;
   width: 100%;
   max-width: 400px;
+  align-items: center;
+}
+
+.clue-row {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
   align-items: center;
 }
 
@@ -729,6 +737,10 @@ h2 {
 .clue-input:focus {
   outline: none;
   border-color: var(--blue);
+}
+
+.clue-form .btn {
+  width: 100%;
 }
 
 .number-picker {

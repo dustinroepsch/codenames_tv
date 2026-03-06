@@ -57,34 +57,36 @@ export default function PlayerSpymaster({ roomState, send, playerId }: PlayerSpy
       <Board board={board} showColors />
       {waitingForClue && (
         <form onSubmit={handleGiveClue} className="clue-form">
-          <input
-            type="text"
-            placeholder="Clue word"
-            value={clueWord}
-            onChange={(e) => setClueWord(e.target.value)}
-            className="clue-input"
-            autoFocus
-          />
-          <div className="number-picker">
-            <button
-              type="button"
-              className="picker-btn"
-              onClick={() => setClueNumber((n) => Math.max(0, n - 1))}
-              disabled={clueNumber <= 0}
-              aria-label="Decrease number"
-            >
-              -
-            </button>
-            <span className="picker-value">{clueNumber}</span>
-            <button
-              type="button"
-              className="picker-btn"
-              onClick={() => setClueNumber((n) => Math.min(9, n + 1))}
-              disabled={clueNumber >= 9}
-              aria-label="Increase number"
-            >
-              +
-            </button>
+          <div className="clue-row">
+            <input
+              type="text"
+              placeholder="Clue word"
+              value={clueWord}
+              onChange={(e) => setClueWord(e.target.value)}
+              className="clue-input"
+              autoFocus
+            />
+            <div className="number-picker">
+              <button
+                type="button"
+                className="picker-btn"
+                onClick={() => setClueNumber((n) => Math.max(0, n - 1))}
+                disabled={clueNumber <= 0}
+                aria-label="Decrease number"
+              >
+                -
+              </button>
+              <span className="picker-value">{clueNumber}</span>
+              <button
+                type="button"
+                className="picker-btn"
+                onClick={() => setClueNumber((n) => Math.min(9, n + 1))}
+                disabled={clueNumber >= 9}
+                aria-label="Increase number"
+              >
+                +
+              </button>
+            </div>
           </div>
           <button type="submit" className="btn btn-primary" disabled={!clueWord.trim()}>
             Give Clue
