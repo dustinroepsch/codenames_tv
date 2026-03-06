@@ -39,10 +39,21 @@ describe("PlayerSpymaster", () => {
     expect(screen.getByText("RED TEAM")).toBeInTheDocument();
   });
 
-  it("shows board with cards", () => {
-    render(<PlayerSpymaster roomState={makeRoomState()} send={vi.fn()} playerId="p1" />);
+  it("shows board with cards and true colors for unrevealed cards", () => {
+    const { container } = render(
+      <PlayerSpymaster roomState={makeRoomState()} send={vi.fn()} playerId="p1" />
+    );
     expect(screen.getByText("Word0")).toBeInTheDocument();
     expect(screen.getByText("Word24")).toBeInTheDocument();
+    // Unrevealed cards should show their true color (spymaster key card)
+    const redCards = container.querySelectorAll(".card-red");
+    const blueCards = container.querySelectorAll(".card-blue");
+    const assassinCards = container.querySelectorAll(".card-assassin");
+    expect(redCards.length).toBe(9);
+    expect(blueCards.length).toBe(8);
+    expect(assassinCards.length).toBe(1);
+    // No cards should be hidden
+    expect(container.querySelectorAll(".card-hidden").length).toBe(0);
   });
 
   it("shows clue form when it is spymaster's turn and no clue given", () => {

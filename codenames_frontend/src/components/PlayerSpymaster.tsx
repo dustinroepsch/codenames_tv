@@ -54,7 +54,7 @@ export default function PlayerSpymaster({ roomState, send, playerId }: PlayerSpy
           <span className="clue-display waiting">Waiting for opponent's clue...</span>
         )}
       </div>
-      <Board board={board} />
+      <Board board={board} showColors />
       {waitingForClue && (
         <form onSubmit={handleGiveClue} className="clue-form">
           <input

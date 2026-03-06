@@ -4,13 +4,14 @@ interface BoardProps {
   board: Card[];
   onCardClick?: (index: number) => void;
   interactive?: boolean;
+  showColors?: boolean;
 }
 
-export default function Board({ board, onCardClick, interactive = false }: BoardProps) {
+export default function Board({ board, onCardClick, interactive = false, showColors = false }: BoardProps) {
   return (
     <div className="board">
       {board.map((card, i) => {
-        const colorClass = card.revealed ? `card-${card.color}` : "card-hidden";
+        const colorClass = (card.revealed || showColors) ? `card-${card.color}` : "card-hidden";
         const clickable = interactive && !card.revealed;
         return (
           <button
