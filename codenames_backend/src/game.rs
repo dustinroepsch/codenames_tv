@@ -104,13 +104,15 @@ pub fn assign_teams(players: &mut std::collections::HashMap<String, Player>) -> 
     let blue_players: Vec<&String> = ids.iter().skip(half).collect();
 
     if let Some(spymaster_id) = red_players.choose(&mut rng)
-        && let Some(p) = players.get_mut(*spymaster_id) {
-            p.role = Some(Role::Spymaster);
-        }
+        && let Some(p) = players.get_mut(*spymaster_id)
+    {
+        p.role = Some(Role::Spymaster);
+    }
     if let Some(spymaster_id) = blue_players.choose(&mut rng)
-        && let Some(p) = players.get_mut(*spymaster_id) {
-            p.role = Some(Role::Spymaster);
-        }
+        && let Some(p) = players.get_mut(*spymaster_id)
+    {
+        p.role = Some(Role::Spymaster);
+    }
 
     // Return a placeholder; actual first team is determined by board
     Team::Red
@@ -167,11 +169,21 @@ mod tests {
         let board = build_board(&[]);
         let red = board.iter().filter(|c| c.color == CardColor::Red).count();
         let blue = board.iter().filter(|c| c.color == CardColor::Blue).count();
-        let neutral = board.iter().filter(|c| c.color == CardColor::Neutral).count();
-        let assassin = board.iter().filter(|c| c.color == CardColor::Assassin).count();
+        let neutral = board
+            .iter()
+            .filter(|c| c.color == CardColor::Neutral)
+            .count();
+        let assassin = board
+            .iter()
+            .filter(|c| c.color == CardColor::Assassin)
+            .count();
 
         assert!(red == 9 || red == 8, "Red should be 8 or 9, got {}", red);
-        assert!(blue == 9 || blue == 8, "Blue should be 8 or 9, got {}", blue);
+        assert!(
+            blue == 9 || blue == 8,
+            "Blue should be 8 or 9, got {}",
+            blue
+        );
         assert_eq!(red + blue, 17, "Red + Blue should be 17");
         assert_eq!(neutral, 7);
         assert_eq!(assassin, 1);
@@ -212,7 +224,9 @@ mod tests {
 
     #[test]
     fn board_deduplicates_submitted_words() {
-        let words: Vec<String> = std::iter::repeat("duplicate".to_string()).take(30).collect();
+        let words: Vec<String> = std::iter::repeat("duplicate".to_string())
+            .take(30)
+            .collect();
         let board = build_board(&words);
         assert_eq!(board.len(), 25);
         // Only 1 card should have "duplicate", rest padded from dictionary
@@ -234,15 +248,31 @@ mod tests {
         // Create a board where Red has 9
         let mut board = Vec::new();
         for i in 0..9 {
-            board.push(Card { word: format!("r{}", i), color: CardColor::Red, revealed: false });
+            board.push(Card {
+                word: format!("r{}", i),
+                color: CardColor::Red,
+                revealed: false,
+            });
         }
         for i in 0..8 {
-            board.push(Card { word: format!("b{}", i), color: CardColor::Blue, revealed: false });
+            board.push(Card {
+                word: format!("b{}", i),
+                color: CardColor::Blue,
+                revealed: false,
+            });
         }
         for i in 0..7 {
-            board.push(Card { word: format!("n{}", i), color: CardColor::Neutral, revealed: false });
+            board.push(Card {
+                word: format!("n{}", i),
+                color: CardColor::Neutral,
+                revealed: false,
+            });
         }
-        board.push(Card { word: "assassin".into(), color: CardColor::Assassin, revealed: false });
+        board.push(Card {
+            word: "assassin".into(),
+            color: CardColor::Assassin,
+            revealed: false,
+        });
 
         assert_eq!(first_team(&board), Team::Red);
     }
@@ -251,15 +281,31 @@ mod tests {
     fn first_team_returns_blue_when_blue_has_9() {
         let mut board = Vec::new();
         for i in 0..8 {
-            board.push(Card { word: format!("r{}", i), color: CardColor::Red, revealed: false });
+            board.push(Card {
+                word: format!("r{}", i),
+                color: CardColor::Red,
+                revealed: false,
+            });
         }
         for i in 0..9 {
-            board.push(Card { word: format!("b{}", i), color: CardColor::Blue, revealed: false });
+            board.push(Card {
+                word: format!("b{}", i),
+                color: CardColor::Blue,
+                revealed: false,
+            });
         }
         for i in 0..7 {
-            board.push(Card { word: format!("n{}", i), color: CardColor::Neutral, revealed: false });
+            board.push(Card {
+                word: format!("n{}", i),
+                color: CardColor::Neutral,
+                revealed: false,
+            });
         }
-        board.push(Card { word: "assassin".into(), color: CardColor::Assassin, revealed: false });
+        board.push(Card {
+            word: "assassin".into(),
+            color: CardColor::Assassin,
+            revealed: false,
+        });
 
         assert_eq!(first_team(&board), Team::Blue);
     }
@@ -276,11 +322,20 @@ mod tests {
 
         assign_teams(&mut players);
 
-        let red_count = players.values().filter(|p| p.team == Some(Team::Red)).count();
-        let blue_count = players.values().filter(|p| p.team == Some(Team::Blue)).count();
+        let red_count = players
+            .values()
+            .filter(|p| p.team == Some(Team::Red))
+            .count();
+        let blue_count = players
+            .values()
+            .filter(|p| p.team == Some(Team::Blue))
+            .count();
 
         assert_eq!(red_count + blue_count, 6);
-        assert!(red_count >= 2 && blue_count >= 2, "Teams should be roughly even");
+        assert!(
+            red_count >= 2 && blue_count >= 2,
+            "Teams should be roughly even"
+        );
     }
 
     #[test]
@@ -302,8 +357,14 @@ mod tests {
             .filter(|p| p.team == Some(Team::Blue) && p.role == Some(Role::Spymaster))
             .count();
 
-        assert_eq!(red_spymasters, 1, "Red team should have exactly 1 spymaster");
-        assert_eq!(blue_spymasters, 1, "Blue team should have exactly 1 spymaster");
+        assert_eq!(
+            red_spymasters, 1,
+            "Red team should have exactly 1 spymaster"
+        );
+        assert_eq!(
+            blue_spymasters, 1,
+            "Blue team should have exactly 1 spymaster"
+        );
     }
 
     #[test]
@@ -344,7 +405,10 @@ mod tests {
         assign_teams(&mut players);
 
         let dc = players.get("dc").unwrap();
-        assert!(dc.team.is_none(), "Disconnected player should not be assigned a team");
+        assert!(
+            dc.team.is_none(),
+            "Disconnected player should not be assigned a team"
+        );
     }
 
     // --- check_winner tests ---
@@ -352,9 +416,21 @@ mod tests {
     #[test]
     fn no_winner_when_cards_remain() {
         let board = vec![
-            Card { word: "a".into(), color: CardColor::Red, revealed: true },
-            Card { word: "b".into(), color: CardColor::Red, revealed: false },
-            Card { word: "c".into(), color: CardColor::Blue, revealed: false },
+            Card {
+                word: "a".into(),
+                color: CardColor::Red,
+                revealed: true,
+            },
+            Card {
+                word: "b".into(),
+                color: CardColor::Red,
+                revealed: false,
+            },
+            Card {
+                word: "c".into(),
+                color: CardColor::Blue,
+                revealed: false,
+            },
         ];
         assert_eq!(check_winner(&board), None);
     }
@@ -362,10 +438,26 @@ mod tests {
     #[test]
     fn red_wins_when_all_red_revealed() {
         let board = vec![
-            Card { word: "a".into(), color: CardColor::Red, revealed: true },
-            Card { word: "b".into(), color: CardColor::Red, revealed: true },
-            Card { word: "c".into(), color: CardColor::Blue, revealed: false },
-            Card { word: "d".into(), color: CardColor::Neutral, revealed: false },
+            Card {
+                word: "a".into(),
+                color: CardColor::Red,
+                revealed: true,
+            },
+            Card {
+                word: "b".into(),
+                color: CardColor::Red,
+                revealed: true,
+            },
+            Card {
+                word: "c".into(),
+                color: CardColor::Blue,
+                revealed: false,
+            },
+            Card {
+                word: "d".into(),
+                color: CardColor::Neutral,
+                revealed: false,
+            },
         ];
         assert_eq!(check_winner(&board), Some(Team::Red));
     }
@@ -373,10 +465,26 @@ mod tests {
     #[test]
     fn blue_wins_when_all_blue_revealed() {
         let board = vec![
-            Card { word: "a".into(), color: CardColor::Red, revealed: false },
-            Card { word: "b".into(), color: CardColor::Blue, revealed: true },
-            Card { word: "c".into(), color: CardColor::Blue, revealed: true },
-            Card { word: "d".into(), color: CardColor::Neutral, revealed: false },
+            Card {
+                word: "a".into(),
+                color: CardColor::Red,
+                revealed: false,
+            },
+            Card {
+                word: "b".into(),
+                color: CardColor::Blue,
+                revealed: true,
+            },
+            Card {
+                word: "c".into(),
+                color: CardColor::Blue,
+                revealed: true,
+            },
+            Card {
+                word: "d".into(),
+                color: CardColor::Neutral,
+                revealed: false,
+            },
         ];
         assert_eq!(check_winner(&board), Some(Team::Blue));
     }
@@ -384,13 +492,28 @@ mod tests {
     #[test]
     fn check_winner_ignores_neutral_and_assassin() {
         let board = vec![
-            Card { word: "a".into(), color: CardColor::Red, revealed: true },
-            Card { word: "b".into(), color: CardColor::Blue, revealed: true },
-            Card { word: "c".into(), color: CardColor::Neutral, revealed: false },
-            Card { word: "d".into(), color: CardColor::Assassin, revealed: false },
+            Card {
+                word: "a".into(),
+                color: CardColor::Red,
+                revealed: true,
+            },
+            Card {
+                word: "b".into(),
+                color: CardColor::Blue,
+                revealed: true,
+            },
+            Card {
+                word: "c".into(),
+                color: CardColor::Neutral,
+                revealed: false,
+            },
+            Card {
+                word: "d".into(),
+                color: CardColor::Assassin,
+                revealed: false,
+            },
         ];
         // Both teams have all their cards revealed — red checked first
         assert_eq!(check_winner(&board), Some(Team::Red));
     }
 }
-

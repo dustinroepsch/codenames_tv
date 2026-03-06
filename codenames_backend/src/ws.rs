@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use axum::extract::ws::{Message, WebSocket};
 use futures::{SinkExt, StreamExt};
-use tokio::sync::{broadcast, Mutex};
+use tokio::sync::{Mutex, broadcast};
 
 use crate::game;
 use crate::messages::{ClientMessage, ServerMessage};
@@ -81,10 +81,9 @@ pub async fn handle_socket(
                 } else {
                     target == player_id_clone
                 };
-                if should_send
-                    && ws_tx.send(Message::Text(json.into())).await.is_err() {
-                        break;
-                    }
+                if should_send && ws_tx.send(Message::Text(json.into())).await.is_err() {
+                    break;
+                }
             }
         }
     });
@@ -189,7 +188,13 @@ async fn handle_message(
 
         ClientMessage::StartWordSubmission => {
             if !is_host {
-                send_error(channels, room_code, player_id, "Only the host can start word submission").await;
+                send_error(
+                    channels,
+                    room_code,
+                    player_id,
+                    "Only the host can start word submission",
+                )
+                .await;
                 return;
             }
             let valid = room_manager
@@ -230,14 +235,26 @@ async fn handle_message(
                     }
                 });
             } else {
-                send_error(channels, room_code, player_id, "Cannot start word submission (need 4+ players, must be in lobby)").await;
+                send_error(
+                    channels,
+                    room_code,
+                    player_id,
+                    "Cannot start word submission (need 4+ players, must be in lobby)",
+                )
+                .await;
             }
         }
 
         ClientMessage::SubmitWord { word } => {
             let trimmed = word.trim().to_string();
             if trimmed.is_empty() || trimmed.len() > 30 {
-                send_error(channels, room_code, player_id, "Word must be 1-30 characters").await;
+                send_error(
+                    channels,
+                    room_code,
+                    player_id,
+                    "Word must be 1-30 characters",
+                )
+                .await;
                 return;
             }
 
@@ -261,7 +278,13 @@ async fn handle_message(
 
         ClientMessage::EndWordSubmission => {
             if !is_host {
-                send_error(channels, room_code, player_id, "Only the host can end word submission").await;
+                send_error(
+                    channels,
+                    room_code,
+                    player_id,
+                    "Only the host can end word submission",
+                )
+                .await;
                 return;
             }
             start_game(room_manager, channels, room_code).await;
@@ -427,15 +450,16 @@ async fn handle_message(
             room_manager
                 .with_room(room_code, |room| {
                     if let Some(game) = &mut room.game
-                        && room.phase == GamePhase::Playing && game.current_clue.is_some()
-                            && let Some(player) = room.players.get(player_id)
-                                && player.team == Some(game.current_turn)
-                                    && player.role == Some(Role::Operative)
-                                {
-                                    game.current_turn = game.current_turn.other();
-                                    game.current_clue = None;
-                                    game.guesses_remaining = None;
-                                }
+                        && room.phase == GamePhase::Playing
+                        && game.current_clue.is_some()
+                        && let Some(player) = room.players.get(player_id)
+                        && player.team == Some(game.current_turn)
+                        && player.role == Some(Role::Operative)
+                    {
+                        game.current_turn = game.current_turn.other();
+                        game.current_clue = None;
+                        game.guesses_remaining = None;
+                    }
                 })
                 .await;
 

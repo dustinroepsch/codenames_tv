@@ -57,7 +57,10 @@ async fn health() -> &'static str {
 async fn create_room(State(state): State<AppState>) -> Json<serde_json::Value> {
     let code = state.room_manager.generate_code().await;
     let host_id = uuid::Uuid::new_v4().to_string();
-    state.room_manager.create_room(code.clone(), host_id.clone()).await;
+    state
+        .room_manager
+        .create_room(code.clone(), host_id.clone())
+        .await;
     Json(serde_json::json!({ "code": code, "host_id": host_id }))
 }
 

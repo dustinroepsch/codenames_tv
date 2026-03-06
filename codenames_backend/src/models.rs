@@ -201,11 +201,31 @@ mod tests {
 
     fn make_test_board() -> Vec<Card> {
         vec![
-            Card { word: "secret_red".into(), color: CardColor::Red, revealed: false },
-            Card { word: "secret_blue".into(), color: CardColor::Blue, revealed: false },
-            Card { word: "revealed_red".into(), color: CardColor::Red, revealed: true },
-            Card { word: "secret_assassin".into(), color: CardColor::Assassin, revealed: false },
-            Card { word: "secret_neutral".into(), color: CardColor::Neutral, revealed: false },
+            Card {
+                word: "secret_red".into(),
+                color: CardColor::Red,
+                revealed: false,
+            },
+            Card {
+                word: "secret_blue".into(),
+                color: CardColor::Blue,
+                revealed: false,
+            },
+            Card {
+                word: "revealed_red".into(),
+                color: CardColor::Red,
+                revealed: true,
+            },
+            Card {
+                word: "secret_assassin".into(),
+                color: CardColor::Assassin,
+                revealed: false,
+            },
+            Card {
+                word: "secret_neutral".into(),
+                color: CardColor::Neutral,
+                revealed: false,
+            },
         ]
     }
 
@@ -401,7 +421,12 @@ mod tests {
 
     #[test]
     fn card_color_roundtrips() {
-        for color in [CardColor::Red, CardColor::Blue, CardColor::Neutral, CardColor::Assassin] {
+        for color in [
+            CardColor::Red,
+            CardColor::Blue,
+            CardColor::Neutral,
+            CardColor::Assassin,
+        ] {
             let json = serde_json::to_string(&color).unwrap();
             let back: CardColor = serde_json::from_str(&json).unwrap();
             assert_eq!(color, back);
