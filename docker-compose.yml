@@ -1,11 +1,20 @@
 ---
 version: "2.1"
 services:
+  frontend:
+    build: ./codenames_frontend
+    container_name: codenames_frontend
+    volumes:
+      - www_data:/www
+    restart: "no"
+
   swag:
     image: lscr.io/linuxserver/swag
     container_name: swag
     cap_add:
       - NET_ADMIN
+    depends_on:
+      - frontend
     environment:
       - PUID=1000
       - PGID=1000
@@ -21,6 +30,7 @@ services:
       - STAGING=false #optional
     volumes:
       - ./swag/config:/config
+      - www_data:/config/www
     ports:
       - 443:443
       - 80:80 #optional
@@ -30,7 +40,10 @@ services:
     build: ./codenames_backend
     container_name: codenames_backend
     environment:
-      - CORS_ORIGIN=https://codejack.net
+      - CORS_ORIGIN=https://codejack.net,https://www.codejack.net
     expose:
       - "3001"
     restart: unless-stopped
+
+volumes:
+  www_data:

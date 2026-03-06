@@ -1,0 +1,22 @@
+# Allowlist approach: ignore everything, then explicitly permit what we own.
+# This prevents accidentally committing certs, private keys, or API credentials.
+
+# Ignore everything
+*
+
+# Keep this file
+!.gitignore
+
+# Allow git to traverse into subdirectories
+!*/
+
+# --- Nginx configs we author ---
+!nginx/nginx.conf
+!nginx/ssl.conf
+!nginx/proxy.conf
+!nginx/site-confs/default.conf
+!nginx/proxy-confs/api.subdomain.conf
+
+# --- Fail2ban ---
+# Only our local overrides; generated action.d/, filter.d/, and the sqlite DB stay ignored
+!fail2ban/jail.local

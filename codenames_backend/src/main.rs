@@ -33,7 +33,13 @@ async fn main() {
         .allow_methods([Method::GET, Method::POST])
         .allow_headers(Any);
     let cors = match std::env::var("CORS_ORIGIN") {
-        Ok(origin) => cors.allow_origin(origin.parse::<axum::http::HeaderValue>().unwrap()),
+        Ok(origins) => {
+            let headers: Vec<axum::http::HeaderValue> = origins
+                .split(',')
+                .map(|o| o.trim().parse::<axum::http::HeaderValue>().unwrap())
+                .collect();
+            cors.allow_origin(headers)
+        }
         Err(_) => cors.allow_origin(Any),
     };
 
