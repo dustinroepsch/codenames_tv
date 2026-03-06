@@ -101,6 +101,26 @@ describe("PlayerOperative", () => {
     expect(send).not.toHaveBeenCalled();
   });
 
+  it("shows unlimited guesses display for zero/unlimited clues", () => {
+    const state = makeRoomState({
+      current_clue: { word: "feathers", number: 0 },
+      guesses_remaining: null,
+    });
+    render(<PlayerOperative roomState={state} send={vi.fn()} playerId="p2" />);
+    expect(screen.getByText(/FEATHERS/)).toBeInTheDocument();
+    expect(screen.getByText("(unlimited guesses)")).toBeInTheDocument();
+  });
+
+  it("shows infinity symbol for unlimited clue number", () => {
+    const state = makeRoomState({
+      current_clue: { word: "feathers", number: null },
+      guesses_remaining: null,
+    });
+    render(<PlayerOperative roomState={state} send={vi.fn()} playerId="p2" />);
+    expect(screen.getByText(/\u221E/)).toBeInTheDocument();
+    expect(screen.getByText("(unlimited guesses)")).toBeInTheDocument();
+  });
+
   it("returns null when board is null", () => {
     const state = makeRoomState({ board: null });
     const { container } = render(

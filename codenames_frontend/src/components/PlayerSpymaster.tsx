@@ -11,7 +11,7 @@ interface PlayerSpymasterProps {
 
 export default function PlayerSpymaster({ roomState, send, playerId }: PlayerSpymasterProps) {
   const [clueWord, setClueWord] = useState("");
-  const [clueNumber, setClueNumber] = useState(1);
+  const [clueNumber, setClueNumber] = useState<number | null>(1);
 
   const { board, current_turn, current_clue, guesses_remaining } = roomState;
   const player = roomState.players.find((p) => p.id === playerId);
@@ -30,6 +30,16 @@ export default function PlayerSpymaster({ roomState, send, playerId }: PlayerSpy
     }
   };
 
+  const decrease = () => {
+    setClueNumber((n) => (n === null ? 9 : Math.max(0, n - 1)));
+  };
+
+  const increase = () => {
+    setClueNumber((n) => (n === null ? null : n >= 9 ? null : n + 1));
+  };
+
+  const displayNumber = clueNumber === null ? "\u221E" : String(clueNumber);
+
   return (
     <div className="player-spymaster">
       <div className="role-header">
@@ -45,8 +55,10 @@ export default function PlayerSpymaster({ roomState, send, playerId }: PlayerSpy
         </span>
         {current_clue ? (
           <span className="clue-display">
-            {current_clue.word.toUpperCase()} — {current_clue.number}
-            <span className="guesses-left"> ({guesses_remaining} guesses left)</span>
+            {current_clue.word.toUpperCase()} — {current_clue.number ?? "\u221E"}
+            {guesses_remaining != null && (
+              <span className="guesses-left"> ({guesses_remaining} guesses left)</span>
+            )}
           </span>
         ) : isMyTurn ? (
           <span className="clue-display waiting">Give your clue below</span>
@@ -70,18 +82,18 @@ export default function PlayerSpymaster({ roomState, send, playerId }: PlayerSpy
               <button
                 type="button"
                 className="picker-btn"
-                onClick={() => setClueNumber((n) => Math.max(0, n - 1))}
-                disabled={clueNumber <= 0}
+                onClick={decrease}
+                disabled={clueNumber === 0}
                 aria-label="Decrease number"
               >
                 -
               </button>
-              <span className="picker-value">{clueNumber}</span>
+              <span className="picker-value">{displayNumber}</span>
               <button
                 type="button"
                 className="picker-btn"
-                onClick={() => setClueNumber((n) => Math.min(9, n + 1))}
-                disabled={clueNumber >= 9}
+                onClick={increase}
+                disabled={clueNumber === null}
                 aria-label="Increase number"
               >
                 +

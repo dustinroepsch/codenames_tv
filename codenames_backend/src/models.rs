@@ -60,7 +60,8 @@ pub struct Player {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Clue {
     pub word: String,
-    pub number: u8,
+    /// The number the spymaster said. `None` means "unlimited".
+    pub number: Option<u8>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -68,7 +69,8 @@ pub struct Game {
     pub board: Vec<Card>,
     pub current_turn: Team,
     pub current_clue: Option<Clue>,
-    pub guesses_remaining: u8,
+    /// Guesses left this turn. `None` means unlimited (from a 0 or unlimited clue).
+    pub guesses_remaining: Option<u8>,
     pub winner: Option<Team>,
     pub losing_team: Option<Team>,
 }
@@ -133,7 +135,7 @@ impl Room {
             board,
             current_turn: self.game.as_ref().map(|g| g.current_turn),
             current_clue: self.game.as_ref().and_then(|g| g.current_clue.clone()),
-            guesses_remaining: self.game.as_ref().map(|g| g.guesses_remaining),
+            guesses_remaining: self.game.as_ref().and_then(|g| g.guesses_remaining),
             winner: self.game.as_ref().and_then(|g| g.winner),
             losing_team: self.game.as_ref().and_then(|g| g.losing_team),
             word_count: self.submitted_words.len(),
@@ -167,7 +169,7 @@ impl Room {
             board,
             current_turn: self.game.as_ref().map(|g| g.current_turn),
             current_clue: self.game.as_ref().and_then(|g| g.current_clue.clone()),
-            guesses_remaining: self.game.as_ref().map(|g| g.guesses_remaining),
+            guesses_remaining: self.game.as_ref().and_then(|g| g.guesses_remaining),
             winner: self.game.as_ref().and_then(|g| g.winner),
             losing_team: self.game.as_ref().and_then(|g| g.losing_team),
             word_count: self.submitted_words.len(),
@@ -185,6 +187,7 @@ pub struct RoomState {
     pub board: Option<Vec<Card>>,
     pub current_turn: Option<Team>,
     pub current_clue: Option<Clue>,
+    /// Guesses left this turn. `None` when unlimited or no active game.
     pub guesses_remaining: Option<u8>,
     pub winner: Option<Team>,
     pub losing_team: Option<Team>,
@@ -237,7 +240,7 @@ mod tests {
             board: make_test_board(),
             current_turn: Team::Red,
             current_clue: None,
-            guesses_remaining: 0,
+            guesses_remaining: None,
             winner: None,
             losing_team: None,
         });

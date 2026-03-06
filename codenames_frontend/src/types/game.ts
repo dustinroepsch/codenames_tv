@@ -19,7 +19,8 @@ export interface Player {
 
 export interface Clue {
   word: string;
-  number: number;
+  /** The number the spymaster said. `null` means "unlimited". */
+  number: number | null;
 }
 
 export interface RoomState {
@@ -48,7 +49,7 @@ export type ClientMessage =
   | { type: "start_word_submission" }
   | { type: "submit_word"; payload: { word: string } }
   | { type: "end_word_submission" }
-  | { type: "give_clue"; payload: { word: string; number: number } }
+  | { type: "give_clue"; payload: { word: string; number: number | null } }
   | { type: "guess"; payload: { card_index: number } }
   | { type: "end_turn" }
   | { type: "play_again" };

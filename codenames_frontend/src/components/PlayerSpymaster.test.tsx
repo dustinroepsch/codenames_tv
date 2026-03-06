@@ -45,14 +45,12 @@ describe("PlayerSpymaster", () => {
     );
     expect(screen.getByText("Word0")).toBeInTheDocument();
     expect(screen.getByText("Word24")).toBeInTheDocument();
-    // Unrevealed cards should show their true color (spymaster key card)
     const redCards = container.querySelectorAll(".card-red");
     const blueCards = container.querySelectorAll(".card-blue");
     const assassinCards = container.querySelectorAll(".card-assassin");
     expect(redCards.length).toBe(9);
     expect(blueCards.length).toBe(8);
     expect(assassinCards.length).toBe(1);
-    // No cards should be hidden
     expect(container.querySelectorAll(".card-hidden").length).toBe(0);
   });
 
@@ -76,11 +74,9 @@ describe("PlayerSpymaster", () => {
     render(<PlayerSpymaster roomState={makeRoomState()} send={send} playerId="p1" />);
 
     await user.type(screen.getByPlaceholderText("Clue word"), "animal");
-    // Default is 1, click + twice to get to 3
     const increaseBtn = screen.getByLabelText("Increase number");
     await user.click(increaseBtn);
     await user.click(increaseBtn);
-    expect(screen.getByText("3")).toBeInTheDocument();
     await user.click(screen.getByText("Give Clue"));
 
     expect(send).toHaveBeenCalledWith({
@@ -89,7 +85,7 @@ describe("PlayerSpymaster", () => {
     });
   });
 
-  it("clamps number picker between 0 and 9", async () => {
+  it("number picker cycles 0 through 9 to unlimited", async () => {
     const user = userEvent.setup();
     const { container } = render(
       <PlayerSpymaster roomState={makeRoomState()} send={vi.fn()} playerId="p1" />
@@ -104,21 +100,70 @@ describe("PlayerSpymaster", () => {
     expect(pickerValue.textContent).toBe("0");
     expect(decreaseBtn).toBeDisabled();
 
-    // Click + 9 times to reach 9
+    // Click + 10 times: 0 → 1 → ... → 9 → ∞
+    for (let i = 0; i < 10; i++) {
+      await user.click(increaseBtn);
+    }
+    expect(pickerValue.textContent).toBe("\u221E");
+    expect(increaseBtn).toBeDisabled();
+
+    // Decrease from ∞ → 9
+    await user.click(decreaseBtn);
+    expect(pickerValue.textContent).toBe("9");
+  });
+
+  it("sends null for unlimited clue number", async () => {
+    const user = userEvent.setup();
+    const send = vi.fn();
+    render(<PlayerSpymaster roomState={makeRoomState()} send={send} playerId="p1" />);
+
+    await user.type(screen.getByPlaceholderText("Clue word"), "feathers");
+    // Go from 1 → 9 → ∞
+    const increaseBtn = screen.getByLabelText("Increase number");
     for (let i = 0; i < 9; i++) {
       await user.click(increaseBtn);
     }
-    expect(pickerValue.textContent).toBe("9");
-    expect(increaseBtn).toBeDisabled();
+    await user.click(screen.getByText("Give Clue"));
+
+    expect(send).toHaveBeenCalledWith({
+      type: "give_clue",
+      payload: { word: "feathers", number: null },
+    });
   });
 
-  it("does not show clue form when clue already given", () => {
+  it("sends 0 for zero clue number", async () => {
+    const user = userEvent.setup();
+    const send = vi.fn();
+    render(<PlayerSpymaster roomState={makeRoomState()} send={send} playerId="p1" />);
+
+    await user.type(screen.getByPlaceholderText("Clue word"), "feathers");
+    // Go from 1 → 0
+    await user.click(screen.getByLabelText("Decrease number"));
+    await user.click(screen.getByText("Give Clue"));
+
+    expect(send).toHaveBeenCalledWith({
+      type: "give_clue",
+      payload: { word: "feathers", number: 0 },
+    });
+  });
+
+  it("displays unlimited clue with infinity symbol", () => {
+    const state = makeRoomState({
+      current_clue: { word: "feathers", number: null },
+      guesses_remaining: null,
+    });
+    render(<PlayerSpymaster roomState={state} send={vi.fn()} playerId="p1" />);
+    expect(screen.queryByPlaceholderText("Clue word")).not.toBeInTheDocument();
+    expect(screen.getByText(/FEATHERS/)).toBeInTheDocument();
+    expect(screen.getByText(/\u221E/)).toBeInTheDocument();
+  });
+
+  it("displays limited clue with guesses remaining", () => {
     const state = makeRoomState({
       current_clue: { word: "animal", number: 3 },
       guesses_remaining: 4,
     });
     render(<PlayerSpymaster roomState={state} send={vi.fn()} playerId="p1" />);
-    expect(screen.queryByPlaceholderText("Clue word")).not.toBeInTheDocument();
     expect(screen.getByText("ANIMAL — 3")).toBeInTheDocument();
     expect(screen.getByText("(4 guesses left)")).toBeInTheDocument();
   });

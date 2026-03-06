@@ -12,8 +12,8 @@ pub enum ClientMessage {
     SubmitWord { word: String },
     /// Host ends word submission early.
     EndWordSubmission,
-    /// Spymaster gives a clue.
-    GiveClue { word: String, number: u8 },
+    /// Spymaster gives a clue. `number` is `None` for unlimited.
+    GiveClue { word: String, number: Option<u8> },
     /// Operative guesses a card by index (0-24).
     Guess { card_index: usize },
     /// Operative ends their team's turn voluntarily.
@@ -65,7 +65,33 @@ mod tests {
         match msg {
             ClientMessage::GiveClue { word, number } => {
                 assert_eq!(word, "animal");
-                assert_eq!(number, 3);
+                assert_eq!(number, Some(3));
+            }
+            _ => panic!("Expected GiveClue message"),
+        }
+    }
+
+    #[test]
+    fn deserialize_give_clue_zero() {
+        let json = r#"{"type":"give_clue","payload":{"word":"feathers","number":0}}"#;
+        let msg: ClientMessage = serde_json::from_str(json).unwrap();
+        match msg {
+            ClientMessage::GiveClue { word, number } => {
+                assert_eq!(word, "feathers");
+                assert_eq!(number, Some(0));
+            }
+            _ => panic!("Expected GiveClue message"),
+        }
+    }
+
+    #[test]
+    fn deserialize_give_clue_unlimited() {
+        let json = r#"{"type":"give_clue","payload":{"word":"feathers","number":null}}"#;
+        let msg: ClientMessage = serde_json::from_str(json).unwrap();
+        match msg {
+            ClientMessage::GiveClue { word, number } => {
+                assert_eq!(word, "feathers");
+                assert_eq!(number, None);
             }
             _ => panic!("Expected GiveClue message"),
         }

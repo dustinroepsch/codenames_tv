@@ -303,7 +303,12 @@ async fn handle_message(
                         word: clue_word,
                         number: *number,
                     });
-                    game.guesses_remaining = number + 1; // allowed number + 1 bonus guess
+                    // 0 or unlimited (None) → unlimited guesses
+                    // N (1-9) → N+1 guesses
+                    game.guesses_remaining = match number {
+                        Some(0) | None => None, // unlimited
+                        Some(n) => Some(n + 1),
+                    };
 
                     Ok(())
                 })
@@ -377,27 +382,29 @@ async fn handle_message(
                                 game.winner = Some(winner);
                                 room.phase = GamePhase::GameOver;
                             } else if guessed_team == current_team {
-                                // Correct guess
-                                game.guesses_remaining =
-                                    game.guesses_remaining.saturating_sub(1);
-                                if game.guesses_remaining == 0 {
-                                    // Used all guesses, end turn
-                                    game.current_turn = current_team.other();
-                                    game.current_clue = None;
-                                    game.guesses_remaining = 0;
+                                // Correct guess — decrement if not unlimited
+                                if let Some(remaining) = &mut game.guesses_remaining {
+                                    *remaining = remaining.saturating_sub(1);
+                                    if *remaining == 0 {
+                                        // Used all guesses, end turn
+                                        game.current_turn = current_team.other();
+                                        game.current_clue = None;
+                                        game.guesses_remaining = None;
+                                    }
                                 }
+                                // If None (unlimited), just keep going
                             } else {
                                 // Wrong team's card — end turn
                                 game.current_turn = current_team.other();
                                 game.current_clue = None;
-                                game.guesses_remaining = 0;
+                                game.guesses_remaining = None;
                             }
                         }
                         CardColor::Neutral => {
                             // Neutral — end turn
                             game.current_turn = current_team.other();
                             game.current_clue = None;
-                            game.guesses_remaining = 0;
+                            game.guesses_remaining = None;
                         }
                     }
 
@@ -428,7 +435,7 @@ async fn handle_message(
                                 {
                                     game.current_turn = game.current_turn.other();
                                     game.current_clue = None;
-                                    game.guesses_remaining = 0;
+                                    game.guesses_remaining = None;
                                 }
                             }
                         }
@@ -481,7 +488,7 @@ async fn start_game(room_manager: &RoomManager, channels: &RoomChannels, room_co
                 board,
                 current_turn: first,
                 current_clue: None,
-                guesses_remaining: 0,
+                guesses_remaining: None,
                 winner: None,
                 losing_team: None,
             });
