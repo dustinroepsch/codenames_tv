@@ -7,6 +7,14 @@ interface BoardProps {
   showColors?: boolean;
 }
 
+function wordSizeClass(word: string): string {
+  const len = word.length;
+  if (len <= 5) return "";
+  if (len <= 7) return "card-word-md";
+  if (len <= 9) return "card-word-sm";
+  return "card-word-xs";
+}
+
 export default function Board({ board, onCardClick, interactive = false, showColors = false }: BoardProps) {
   return (
     <div className="board">
@@ -20,7 +28,7 @@ export default function Board({ board, onCardClick, interactive = false, showCol
             onClick={() => clickable && onCardClick?.(i)}
             disabled={!clickable}
           >
-            <span className="card-word">{card.word}</span>
+            <span className={`card-word ${wordSizeClass(card.word)}`}>{card.word}</span>
           </button>
         );
       })}

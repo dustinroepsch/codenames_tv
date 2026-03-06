@@ -382,11 +382,23 @@ h2 {
 }
 
 .card-word {
-  font-size: clamp(0.8rem, 2vw, 1.2rem);
+  font-size: clamp(0.7rem, 2vw, 1.2rem);
   font-weight: 700;
   text-align: center;
   text-transform: uppercase;
-  word-break: break-word;
+  line-height: 1.1;
+}
+
+.card-word-md {
+  font-size: clamp(0.55rem, 1.6vw, 1rem);
+}
+
+.card-word-sm {
+  font-size: clamp(0.45rem, 1.3vw, 0.85rem);
+}
+
+.card-word-xs {
+  font-size: clamp(0.4rem, 1.1vw, 0.75rem);
 }
 
 .card-hidden {
