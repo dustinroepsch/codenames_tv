@@ -43,6 +43,10 @@ async fn main() {
         Err(_) => cors.allow_origin(Any),
     };
 
+    // Spawn background task to clean up stale rooms every 5 minutes
+    let cleanup_rm = state.room_manager.clone();
+    let cleanup_ch = state.channels.clone();
+
     let app = Router::new()
         .route("/health", get(health))
         .route("/rooms", post(create_room))
@@ -50,6 +54,19 @@ async fn main() {
         .route("/ws/{code}", get(ws_upgrade))
         .layer(cors)
         .with_state(state);
+    tokio::spawn(async move {
+        loop {
+            tokio::time::sleep(tokio::time::Duration::from_secs(300)).await;
+            let stale_codes = cleanup_rm.remove_stale_rooms(3600).await;
+            if !stale_codes.is_empty() {
+                let mut channels = cleanup_ch.lock().await;
+                for code in &stale_codes {
+                    channels.remove(code);
+                }
+                println!("Cleaned up {} stale rooms", stale_codes.len());
+            }
+        }
+    });
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3001").await.unwrap();
     println!("Backend listening on http://0.0.0.0:3001");
@@ -88,6 +105,7 @@ async fn get_room(
 #[derive(Deserialize)]
 struct WsQuery {
     host: Option<bool>,
+    session: Option<String>,
 }
 
 async fn ws_upgrade(
@@ -98,7 +116,15 @@ async fn ws_upgrade(
 ) -> axum::response::Response {
     let code = code.to_uppercase();
     let is_host = query.host.unwrap_or(false);
+    let session = query.session;
     ws.on_upgrade(move |socket| {
-        ws::handle_socket(socket, code, state.room_manager, state.channels, is_host)
+        ws::handle_socket(
+            socket,
+            code,
+            state.room_manager,
+            state.channels,
+            is_host,
+            session,
+        )
     })
 }

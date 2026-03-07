@@ -6,6 +6,8 @@ use serde::{Deserialize, Serialize};
 pub enum ClientMessage {
     /// Player joins the room with a display name.
     Join { name: String },
+    /// Player reconnects using their session (no name needed).
+    Reconnect,
     /// Host starts word submission phase.
     StartWordSubmission,
     /// Player submits a word.
@@ -32,6 +34,8 @@ pub enum ServerMessage {
     Error { message: String },
     /// Player's assigned ID upon joining.
     Joined { player_id: String },
+    /// Session-based reconnect failed (client should re-join).
+    ReconnectFailed,
 }
 
 #[cfg(test)]
@@ -133,6 +137,20 @@ mod tests {
         let json = r#"{"type":"play_again"}"#;
         let msg: ClientMessage = serde_json::from_str(json).unwrap();
         assert!(matches!(msg, ClientMessage::PlayAgain));
+    }
+
+    #[test]
+    fn deserialize_reconnect() {
+        let json = r#"{"type":"reconnect"}"#;
+        let msg: ClientMessage = serde_json::from_str(json).unwrap();
+        assert!(matches!(msg, ClientMessage::Reconnect));
+    }
+
+    #[test]
+    fn serialize_reconnect_failed() {
+        let msg = ServerMessage::ReconnectFailed;
+        let json = serde_json::to_string(&msg).unwrap();
+        assert!(json.contains("\"type\":\"reconnect_failed\""));
     }
 
     #[test]

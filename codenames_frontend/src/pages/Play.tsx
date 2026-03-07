@@ -7,11 +7,34 @@ import PlayerSpymaster from "../components/PlayerSpymaster";
 import PlayerOperative from "../components/PlayerOperative";
 import PlayerGameOver from "../components/PlayerGameOver";
 
+function getStoredName(code: string | undefined): string {
+  if (!code) return "";
+  try {
+    const raw = sessionStorage.getItem(`codenames_${code}`);
+    if (raw) {
+      const data = JSON.parse(raw);
+      return data.name || "";
+    }
+  } catch {
+    // ignore
+  }
+  return "";
+}
+
 export default function Play() {
   const { code } = useParams<{ code: string }>();
-  const { roomState, playerId, connected, send, connectToRoom } = useGame();
-  const [name, setName] = useState("");
-  const [joined, setJoined] = useState(false);
+  const {
+    roomState,
+    playerId,
+    connected,
+    send,
+    connectToRoom,
+    isReconnecting,
+    savePlayerName,
+  } = useGame();
+
+  const [name, setName] = useState(() => getStoredName(code));
+  const [joinSubmitted, setJoinSubmitted] = useState(false);
 
   useEffect(() => {
     if (code) connectToRoom(code, false);
@@ -22,7 +45,8 @@ export default function Play() {
     const trimmed = name.trim();
     if (trimmed) {
       send({ type: "join", payload: { name: trimmed } });
-      setJoined(true);
+      savePlayerName(trimmed);
+      setJoinSubmitted(true);
     }
   };
 
@@ -34,7 +58,21 @@ export default function Play() {
     );
   }
 
-  if (!joined || !playerId) {
+  if (isReconnecting) {
+    return (
+      <div className="play">
+        <p>Reconnecting...</p>
+      </div>
+    );
+  }
+
+  // Show join form when we have no player identity and haven't just submitted the form.
+  // Check sessionStorage to know if a stored session still exists (it's cleared on reconnect failure).
+  const hasSession =
+    !!code && sessionStorage.getItem(`codenames_${code}`) !== null;
+  const showJoinForm = !playerId && !joinSubmitted && !hasSession;
+
+  if (showJoinForm) {
     return (
       <div className="play">
         <h2>Join Room {code}</h2>
@@ -60,7 +98,7 @@ export default function Play() {
     );
   }
 
-  if (!roomState) {
+  if (!playerId || !roomState) {
     return (
       <div className="play">
         <p>Loading...</p>

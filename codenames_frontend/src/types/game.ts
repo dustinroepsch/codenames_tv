@@ -41,11 +41,13 @@ export interface RoomState {
 export type ServerMessage =
   | { type: "state"; payload: RoomState }
   | { type: "error"; payload: { message: string } }
-  | { type: "joined"; payload: { player_id: string } };
+  | { type: "joined"; payload: { player_id: string } }
+  | { type: "reconnect_failed" };
 
 // Client → Server messages
 export type ClientMessage =
   | { type: "join"; payload: { name: string } }
+  | { type: "reconnect" }
   | { type: "start_word_submission" }
   | { type: "submit_word"; payload: { word: string } }
   | { type: "end_word_submission" }

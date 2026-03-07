@@ -13,6 +13,8 @@ const mockContextValue: GameContextValue = {
   error: null,
   send: vi.fn(),
   connectToRoom: vi.fn(),
+  isReconnecting: false,
+  savePlayerName: vi.fn(),
 };
 
 vi.mock("../hooks/useGame", () => ({
@@ -61,6 +63,8 @@ beforeEach(() => {
   mockContextValue.connected = false;
   mockContextValue.playerId = null;
   mockContextValue.roomState = null;
+  mockContextValue.isReconnecting = false;
+  sessionStorage.clear();
 });
 
 describe("Play page", () => {
@@ -117,8 +121,7 @@ describe("Play page", () => {
 
   // --- Phase views after joining ---
 
-  it("shows lobby view after joining", async () => {
-    const user = userEvent.setup();
+  it("shows lobby view when player is identified", () => {
     mockContextValue.connected = true;
     mockContextValue.playerId = "p1";
     mockContextValue.roomState = makeRoomState({
@@ -128,17 +131,13 @@ describe("Play page", () => {
     });
     renderPlay();
 
-    await user.type(screen.getByPlaceholderText("Your name"), "Alice");
-    await user.click(screen.getByText("Join"));
-
     expect(screen.getByText("You're in!")).toBeInTheDocument();
     expect(
       screen.getByText("Waiting for host to start..."),
     ).toBeInTheDocument();
   });
 
-  it("shows word submission view", async () => {
-    const user = userEvent.setup();
+  it("shows word submission view", () => {
     mockContextValue.connected = true;
     mockContextValue.playerId = "p1";
     mockContextValue.roomState = makeRoomState({
@@ -147,16 +146,12 @@ describe("Play page", () => {
     });
     renderPlay();
 
-    await user.type(screen.getByPlaceholderText("Your name"), "Alice");
-    await user.click(screen.getByText("Join"));
-
     expect(screen.getByText("Submit Words")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Enter a word")).toBeInTheDocument();
     expect(screen.getByText("3 total words submitted")).toBeInTheDocument();
   });
 
-  it("shows spymaster view for spymaster in playing phase", async () => {
-    const user = userEvent.setup();
+  it("shows spymaster view for spymaster in playing phase", () => {
     mockContextValue.connected = true;
     mockContextValue.playerId = "p1";
     mockContextValue.roomState = makeRoomState({
@@ -182,15 +177,11 @@ describe("Play page", () => {
     });
     renderPlay();
 
-    await user.type(screen.getByPlaceholderText("Your name"), "Alice");
-    await user.click(screen.getByText("Join"));
-
     expect(screen.getByText("SPYMASTER")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Clue word")).toBeInTheDocument();
   });
 
-  it("shows operative view for operative in playing phase", async () => {
-    const user = userEvent.setup();
+  it("shows operative view for operative in playing phase", () => {
     mockContextValue.connected = true;
     mockContextValue.playerId = "p2";
     mockContextValue.roomState = makeRoomState({
@@ -218,16 +209,12 @@ describe("Play page", () => {
     });
     renderPlay();
 
-    await user.type(screen.getByPlaceholderText("Your name"), "Bob");
-    await user.click(screen.getByText("Join"));
-
     expect(screen.getByText("OPERATIVE")).toBeInTheDocument();
     expect(screen.getByText("ANIMAL — 3")).toBeInTheDocument();
     expect(screen.getByText("End Turn")).toBeInTheDocument();
   });
 
-  it("shows game over view", async () => {
-    const user = userEvent.setup();
+  it("shows game over view", () => {
     mockContextValue.connected = true;
     mockContextValue.playerId = "p1";
     mockContextValue.roomState = makeRoomState({
@@ -245,9 +232,6 @@ describe("Play page", () => {
       ],
     });
     renderPlay();
-
-    await user.type(screen.getByPlaceholderText("Your name"), "Alice");
-    await user.click(screen.getByText("Join"));
 
     expect(screen.getByText("RED TEAM WINS!")).toBeInTheDocument();
     expect(screen.getByText("You won!")).toBeInTheDocument();

@@ -1,5 +1,12 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+pub fn now_secs() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
+}
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum GamePhase {
@@ -55,6 +62,9 @@ pub struct Player {
     pub team: Option<Team>,
     pub role: Option<Role>,
     pub connected: bool,
+    /// Session token for reconnection. Not sent to clients.
+    #[serde(skip)]
+    pub session_id: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -84,6 +94,8 @@ pub struct Room {
     pub game: Option<Game>,
     pub submitted_words: Vec<String>,
     pub word_submission_deadline: Option<u64>,
+    /// Unix epoch seconds of last activity (for room cleanup).
+    pub last_activity: u64,
 }
 
 impl Room {
@@ -96,6 +108,7 @@ impl Room {
             game: None,
             submitted_words: Vec::new(),
             word_submission_deadline: None,
+            last_activity: now_secs(),
         }
     }
 
@@ -242,6 +255,7 @@ mod tests {
                 team: Some(Team::Red),
                 role: Some(Role::Spymaster),
                 connected: true,
+                session_id: None,
             },
         );
         // Add an operative
@@ -253,6 +267,7 @@ mod tests {
                 team: Some(Team::Red),
                 role: Some(Role::Operative),
                 connected: true,
+                session_id: None,
             },
         );
 
@@ -301,6 +316,7 @@ mod tests {
                 team: None,
                 role: None,
                 connected: true,
+                session_id: None,
             },
         );
         assert_eq!(room.player_count(), 1);

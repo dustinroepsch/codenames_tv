@@ -152,6 +152,7 @@ mod tests {
                 team: None,
                 role: None,
                 connected: true,
+                session_id: None,
             },
         )
     }
@@ -399,6 +400,7 @@ mod tests {
                 team: None,
                 role: None,
                 connected: false,
+                session_id: None,
             },
         );
 

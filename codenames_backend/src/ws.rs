@@ -61,13 +61,29 @@ pub async fn handle_socket(
     room_manager: RoomManager,
     channels: RoomChannels,
     is_host: bool,
+    session_id: Option<String>,
 ) {
     let (mut ws_tx, mut ws_rx) = socket.split();
 
     let tx = get_channel(&channels, &room_code).await;
     let mut rx = tx.subscribe();
 
-    let player_id = uuid::Uuid::new_v4().to_string();
+    // Try to find an existing player by session_id (for reconnection)
+    let player_id = if let Some(ref sid) = session_id {
+        let existing = room_manager
+            .with_room(&room_code, |room| {
+                room.players
+                    .values()
+                    .find(|p| p.session_id.as_deref() == Some(sid.as_str()))
+                    .map(|p| p.id.clone())
+            })
+            .await
+            .flatten();
+        existing.unwrap_or_else(|| uuid::Uuid::new_v4().to_string())
+    } else {
+        uuid::Uuid::new_v4().to_string()
+    };
+
     let player_id_clone = player_id.clone();
     let room_code_clone = room_code.clone();
 
@@ -121,8 +137,16 @@ pub async fn handle_socket(
             &room_manager,
             &channels,
             is_host,
+            session_id.as_deref(),
         )
         .await;
+
+        // Update room activity timestamp
+        room_manager
+            .with_room(&room_code, |room| {
+                room.last_activity = now_secs();
+            })
+            .await;
     }
 
     // Player disconnected — mark as disconnected
@@ -145,22 +169,12 @@ async fn handle_message(
     room_manager: &RoomManager,
     channels: &RoomChannels,
     is_host: bool,
+    session_id: Option<&str>,
 ) {
     match msg {
         ClientMessage::Join { name } => {
             room_manager
                 .with_room(room_code, |room| {
-                    // Check if player is rejoining
-                    let existing = room
-                        .players
-                        .values()
-                        .find(|p| p.name == *name && !p.connected)
-                        .map(|p| p.id.clone());
-
-                    if let Some(_existing_id) = existing {
-                        // Rejoin not fully supported yet — just add as new
-                    }
-
                     room.players.insert(
                         player_id.to_string(),
                         Player {
@@ -169,6 +183,7 @@ async fn handle_message(
                             team: None,
                             role: None,
                             connected: true,
+                            session_id: session_id.map(|s| s.to_string()),
                         },
                     );
                 })
@@ -184,6 +199,37 @@ async fn handle_message(
             }
 
             broadcast_state(room_manager, channels, room_code).await;
+        }
+
+        ClientMessage::Reconnect => {
+            // Check if the player exists in the room (resolved by session_id in handle_socket)
+            let found = room_manager
+                .with_room(room_code, |room| {
+                    if let Some(player) = room.players.get_mut(player_id) {
+                        player.connected = true;
+                        true
+                    } else {
+                        false
+                    }
+                })
+                .await
+                .unwrap_or(false);
+
+            let tx = get_channel(channels, room_code).await;
+            if found {
+                let joined = ServerMessage::Joined {
+                    player_id: player_id.to_string(),
+                };
+                if let Ok(json) = serde_json::to_string(&joined) {
+                    let _ = tx.send(format!("{}|{}", player_id, json));
+                }
+                broadcast_state(room_manager, channels, room_code).await;
+            } else {
+                let msg = ServerMessage::ReconnectFailed;
+                if let Ok(json) = serde_json::to_string(&msg) {
+                    let _ = tx.send(format!("{}|{}", player_id, json));
+                }
+            }
         }
 
         ClientMessage::StartWordSubmission => {
@@ -208,12 +254,7 @@ async fn handle_message(
                     room.phase = GamePhase::WordSubmission;
                     room.submitted_words.clear();
                     // Deadline: 60 seconds from now
-                    let deadline = std::time::SystemTime::now()
-                        .duration_since(std::time::UNIX_EPOCH)
-                        .unwrap()
-                        .as_secs()
-                        + 60;
-                    room.word_submission_deadline = Some(deadline);
+                    room.word_submission_deadline = Some(now_secs() + 60);
                     true
                 })
                 .await;

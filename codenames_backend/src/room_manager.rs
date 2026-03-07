@@ -52,6 +52,21 @@ impl RoomManager {
         let mut rooms = self.rooms.lock().await;
         rooms.get_mut(code).map(f)
     }
+
+    /// Remove rooms that haven't had activity for `max_age_secs`. Returns removed room codes.
+    pub async fn remove_stale_rooms(&self, max_age_secs: u64) -> Vec<String> {
+        let now = crate::models::now_secs();
+        let mut rooms = self.rooms.lock().await;
+        let stale: Vec<String> = rooms
+            .iter()
+            .filter(|(_, room)| now.saturating_sub(room.last_activity) > max_age_secs)
+            .map(|(code, _)| code.clone())
+            .collect();
+        for code in &stale {
+            rooms.remove(code);
+        }
+        stale
+    }
 }
 
 #[cfg(test)]

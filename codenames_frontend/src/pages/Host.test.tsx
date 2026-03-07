@@ -12,6 +12,8 @@ const mockContextValue: GameContextValue = {
   error: null,
   send: vi.fn(),
   connectToRoom: vi.fn(),
+  isReconnecting: false,
+  savePlayerName: vi.fn(),
 };
 
 vi.mock("../hooks/useGame", () => ({

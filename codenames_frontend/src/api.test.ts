@@ -19,6 +19,18 @@ describe("wsUrl", () => {
     expect(url).toContain("/ws/XYZW");
     expect(url).toContain("host=false");
   });
+
+  it("includes session parameter when provided", () => {
+    const url = wsUrl("abcd", false, "my-session-id");
+    expect(url).toBe(
+      "ws://localhost:3001/ws/ABCD?host=false&session=my-session-id",
+    );
+  });
+
+  it("omits session parameter when null", () => {
+    const url = wsUrl("abcd", false, null);
+    expect(url).toBe("ws://localhost:3001/ws/ABCD?host=false");
+  });
 });
 
 describe("createRoom", () => {

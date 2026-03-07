@@ -15,6 +15,14 @@ export async function getRoom(
   return res.json();
 }
 
-export function wsUrl(roomCode: string, isHost: boolean): string {
-  return `${WS_BASE}/ws/${roomCode.toUpperCase()}?host=${isHost}`;
+export function wsUrl(
+  roomCode: string,
+  isHost: boolean,
+  sessionId?: string | null,
+): string {
+  let url = `${WS_BASE}/ws/${roomCode.toUpperCase()}?host=${isHost}`;
+  if (sessionId) {
+    url += `&session=${encodeURIComponent(sessionId)}`;
+  }
+  return url;
 }
